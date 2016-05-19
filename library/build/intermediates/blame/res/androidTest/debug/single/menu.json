@@ -2,5 +2,9 @@
     {
         "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\TtsDemo\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\menu\\directory_chooser.xml",
         "source": "C:\\Users\\Administrator\\AndroidStudioProjects\\TtsDemo\\library\\build\\intermediates\\bundles\\debug\\res\\menu\\directory_chooser.xml"
+    },
+    {
+        "merged": "E:\\project\\StudioProjects\\TtsDemo\\library\\build\\intermediates\\res\\merged\\androidTest\\debug\\menu\\directory_chooser.xml",
+        "source": "E:\\project\\StudioProjects\\TtsDemo\\library\\build\\intermediates\\bundles\\debug\\res\\menu\\directory_chooser.xml"
     }
 ]

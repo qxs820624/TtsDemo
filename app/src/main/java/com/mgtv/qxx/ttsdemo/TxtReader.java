@@ -36,7 +36,7 @@ public class TxtReader extends Activity implements
 
     private static final String LOG_TAG = "TxtReader";
     private static final int BUF_SIZE = 1024 * 2;
-    private static final int BUF_SHOW = 2;
+    private static final int BUF_SHOW = 1000;
 
     private static final int ARROW_UP = 1;
     private static final int ARROW_DOWN = 2;
@@ -250,7 +250,7 @@ public class TxtReader extends Activity implements
                         // mIsReader.read(buf);
                         inbr.read(buf);
                         mReadBufNum++;
-                        Log.e(LOG_TAG,String.valueOf(buf));
+                        // Log.e(LOG_TAG,String.valueOf(buf));
                     }
 
                     mStringBuilder.append(buf);
@@ -279,11 +279,6 @@ public class TxtReader extends Activity implements
         protected Object doInBackground(Object... params) {
             Uri uri = (Uri) params[0];
             uri = Uri.parse(filename);
-
-            // LargFileRead lfr = new LargFileRead();
-            // if (lfr != null){
-            // }
-            // TxtReader.this.finish();
             try {
                 showText(uri);
             } catch (Exception e) {
@@ -304,8 +299,7 @@ public class TxtReader extends Activity implements
         @Override
         public void run() {
             try {
-
-                Log.d(LOG_TAG,"BackBufReadThread");
+                // Log.d(LOG_TAG,"BackBufReadThread");
                 BufferedReader inbr = null;
                 // 高效缓存
                 BufferedInputStream bis = null;
@@ -374,22 +368,6 @@ public class TxtReader extends Activity implements
         }
     }
     public void backActivity() {
-
-        // 显示意图的操作
-        // Intent intent = new Intent();
-        // intent.setClass(this, MainActivity.class);
-
-        /*
-         * intent.setClassName("com.example.lession12_activity",
-         * "com.example.lession12_activity.MainActivity");
-         */
-
-        // intent.setComponent(new
-        // ComponentName("com.example.lession12_activity",
-        // "com.example.lession12_activity.MainActivity"));
-
-        // startActivity(intent);
-
         Intent intent = new Intent();
         intent.putExtra("result", "朗读完毕");
 

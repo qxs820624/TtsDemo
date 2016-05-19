@@ -2,5 +2,9 @@
     {
         "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\TtsDemo\\library\\build\\intermediates\\res\\merged\\release\\menu\\directory_chooser.xml",
         "source": "C:\\Users\\Administrator\\AndroidStudioProjects\\TtsDemo\\library\\src\\main\\res\\menu\\directory_chooser.xml"
+    },
+    {
+        "merged": "E:\\project\\StudioProjects\\TtsDemo\\library\\build\\intermediates\\res\\merged\\release\\menu\\directory_chooser.xml",
+        "source": "E:\\project\\StudioProjects\\TtsDemo\\library\\src\\main\\res\\menu\\directory_chooser.xml"
     }
 ]
