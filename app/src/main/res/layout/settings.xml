@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.mgtv.qxx.ttsdemo.SetTts">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_set_pitch"
+        android:textColor="#F00F"
+        android:textColorHighlight="#F0FF"
+        android:textStyle="italic|bold"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/et_speak_pitch_value"
+        android:id="@+id/et_speech_pitch"
+        android:inputType="numberDecimal"
+        android:textColor="#F00"
+        android:textStyle="bold"
+        android:background="#00000000"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_set_rate"
+        android:textColor="#F00F"
+        android:textColorHighlight="#F0FF"
+        android:textStyle="bold|italic"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/et_speak_rate_value"
+        android:id="@+id/et_speech_rate"
+        android:inputType="numberDecimal"
+        android:textColor="#F00"
+        android:textStyle="bold"
+        android:background="#00000000"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_set_encoding"
+        android:textColor="#F00F"
+        android:textColorHighlight="#F0FF"
+        android:textStyle="bold|italic"/>
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinnerTextEncoding"
+        android:prompt="@string/encoding_prompt"
+        android:entries="@array/encoding_array"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/tv_set_length"
+        android:textColor="#F00F"
+        android:textColorHighlight="#F0FF"
+        android:textStyle="bold|italic"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@integer/et_speak_length_value"
+        android:id="@+id/et_speech_length"
+        android:inputType="number"
+        android:textColor="#F00"
+        android:textStyle="bold"
+        android:background="#00000000" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bt_save_setting"
+        android:layout_gravity="right"
+        android:id="@+id/bt_save_setting"
+        android:textColor="#150"
+        android:textStyle="bold"/>
+</LinearLayout>

@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">文字朗读</string>
+    <string name="radio_group">请选择朗读的语言类别:</string>
+    <string name="button_save">保存</string>
+    <string name="button_speak_out">朗读</string>
+    <string name="check_box_speak_while_write">边写边读</string>
+    <string name="choose_directory">...</string>
+    <string name="edit_text_speak_hint">TEXT TO SPEAK</string>
+    <string name="none">/storage/sdcard2</string>
+    <string name="radio_english">英语</string>
+    <string name="radio_group_content">选择语言</string>
+    <string name="text_view_language_selected">您选择的语言是：中文</string>
+    <string name="text_view_save_prompt">选择目录保存声音</string>
+    <string name="text_view_speak">文字转换语音</string>
+    <string name="bt_save_setting">保存</string>
+    <string name="button_show_file">文件</string>
+    <string name="encoding_prompt">选择打开文件的编码方式</string>
+    <string name="et_speak_pitch_value">0.9</string>
+    <string name="et_speak_rate_value">0.9</string>
+    <string name="menu_setting">设置</string>
+    <string name="radio_chinese">中文</string>
+    <string name="tv_set_pitch">设置朗读音高</string>
+    <string name="tv_set_rate">设置朗读速度</string>
+    <string name="tv_set_encoding">设置打开文件的编码方式，默认UTF-8</string>
+    <string name="tv_set_length">设置每次读取文件的长度，输入偶数，最小100，最大1000</string>
+    <string name="tts_package">com.google.android.tts-3.8.16-210308161.apk</string>
+</resources>

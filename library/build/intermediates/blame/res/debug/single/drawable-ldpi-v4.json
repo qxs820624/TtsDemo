@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\TtsDemo\\library\\build\\intermediates\\res\\merged\\debug\\drawable-ldpi-v4\\navigation_up.png",
+        "source": "C:\\Users\\Administrator\\AndroidStudioProjects\\TtsDemo\\library\\src\\main\\res\\drawable-ldpi\\navigation_up.png"
+    },
+    {
+        "merged": "C:\\Users\\Administrator\\AndroidStudioProjects\\TtsDemo\\library\\build\\intermediates\\res\\merged\\debug\\drawable-ldpi-v4\\navigation_up_light.png",
+        "source": "C:\\Users\\Administrator\\AndroidStudioProjects\\TtsDemo\\library\\src\\main\\res\\drawable-ldpi\\navigation_up_light.png"
+    }
+]

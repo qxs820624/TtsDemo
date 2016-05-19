@@ -9,10 +9,11 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.mgtv.qxx.ttsdemo.TtsDemoActivity">
 
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TEXT TO SPEACH"
+        android:text="@string/text_view_speak"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:id="@+id/textView" />
@@ -22,17 +23,18 @@
         android:layout_height="wrap_content"
         android:inputType="textMultiLine"
         android:ems="10"
+        android:hint="@string/edit_text_speak_hint"
         android:id="@+id/editTextToSpeak"
         android:layout_below="@+id/textView"
         android:layout_marginTop="35dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignEnd="@+id/buttonSpeakOut"
+        android:layout_alignStart="@+id/editTextShowDirectory" />
 
     <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Speak Out"
+        android:text="@string/button_speak_out"
         android:id="@+id/buttonSpeakOut"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true" />
@@ -41,45 +43,91 @@
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Save"
+        android:text="@string/button_save"
         android:id="@+id/buttonSaveWave"
-        android:layout_alignParentBottom="true"
-        android:layout_alignEnd="@+id/buttonSpeakOut"
-        android:layout_marginBottom="79dp" />
+        android:layout_below="@+id/editTextShowDirectory"
+        android:layout_alignEnd="@+id/editTextShowDirectory" />
 
     <CheckBox
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Read while Write"
+        android:text="@string/check_box_speak_while_write"
         android:id="@+id/checkBoxReadWrite"
         android:layout_above="@+id/buttonSpeakOut"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="@string/radio_group" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Select Directory"
-        android:id="@+id/textView2"
-        android:layout_above="@+id/buttonSaveWave"
+        android:text="@string/text_view_save_prompt"
+        android:id="@+id/textViewSelecDirectory"
+        android:layout_marginTop="15dp"
+        android:layout_below="@+id/buttonSpeakOut"
         android:layout_alignParentStart="true" />
 
-    <RadioButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="English"
-        android:id="@+id/radioButtonLangEn"
-        android:layout_above="@+id/checkBoxReadWrite"
-        android:layout_alignParentStart="true"
-        android:singleLine="false" />
 
-    <RadioButton
+    <RadioGroup
+        android:id="@+id/radioGroupLanguage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toStartOf="@+id/buttonSpeakOut"
+        android:layout_above="@+id/checkBoxReadWrite"
+        android:layout_alignEnd="@+id/editTextToSpeak"
+        android:layout_below="@+id/editTextToSpeak"
+        android:contentDescription="@string/radio_group_content">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/radio_english"
+            android:id="@+id/radioButtonLangEn"
+            android:layout_above="@+id/checkBoxReadWrite"
+            android:layout_alignParentStart="true"
+            android:singleLine="false" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/radio_chinese"
+            android:id="@+id/radioButtonLangCn"
+            android:layout_above="@+id/checkBoxReadWrite"
+            android:layout_toStartOf="@+id/buttonSpeakOut"
+            android:enabled="true"
+            android:checked="true" />
+        <TextView
+            android:id="@+id/textViewShowLanguage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/text_view_language_selected"
+            android:textSize="9pt"/>
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btnChoose"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:text="@string/choose_directory"
+        android:layout_below="@+id/textViewSelecDirectory"
+        android:layout_alignParentStart="true" />
+
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="中文"
-        android:id="@+id/radioButtonLangCn"
-        android:layout_above="@+id/checkBoxReadWrite"
-        android:layout_toStartOf="@+id/buttonSpeakOut"
-        android:enabled="true"
-        android:checked="true" />
+        android:inputType="textMultiLine"
+        android:ems="10"
+        android:id="@+id/editTextShowDirectory"
+        android:text="@string/none"
+        android:layout_alignBottom="@+id/btnChoose"
+        android:layout_alignEnd="@+id/buttonSpeakOut"
+        android:layout_toEndOf="@+id/btnChoose" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonShowTextFile"
+        android:text="@string/button_show_file"
+        android:layout_above="@+id/radioGroupLanguage"
+        android:layout_toStartOf="@+id/editTextToSpeak" />
 </RelativeLayout>
