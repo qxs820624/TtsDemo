@@ -5,77 +5,156 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.mgtv.qxx.ttsdemo.SetTts">
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/tv_set_pitch"
-        android:textColor="#F00F"
-        android:textColorHighlight="#F0FF"
-        android:textStyle="italic|bold"/>
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/et_speak_pitch_value"
-        android:id="@+id/et_speech_pitch"
-        android:inputType="numberDecimal"
-        android:textColor="#F00"
-        android:textStyle="bold"
-        android:background="#00000000"/>
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/tv_set_rate"
-        android:textColor="#F00F"
-        android:textColorHighlight="#F0FF"
-        android:textStyle="bold|italic"/>
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/et_speak_rate_value"
-        android:id="@+id/et_speech_rate"
-        android:inputType="numberDecimal"
-        android:textColor="#F00"
-        android:textStyle="bold"
-        android:background="#00000000"/>
+        android:layout_height="match_parent">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tv_set_pitch"
+            android:textColor="#F00F"
+            android:textColorHighlight="#F0FF"
+            android:textStyle="italic|bold"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:id="@+id/textView_speech_pitch"
+            android:layout_above="@+id/seekBar_speech_pitch" />
+        <SeekBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBar_speech_pitch"
+            android:layout_alignBottom="@+id/et_speech_pitch"
+            android:layout_alignParentStart="true"
+            android:max="100"
+            android:progress="10"
+            android:layout_alignTop="@+id/et_speech_pitch"
+            android:layout_toStartOf="@+id/et_speech_rate" />
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/et_speak_pitch_value"
+            android:id="@+id/et_speech_pitch"
+            android:inputType="numberDecimal"
+            android:textColor="#F00"
+            android:textStyle="bold"
+            android:background="#1f0"
+            android:layout_toRightOf="@+id/seekBar_speech_pitch"
+            android:layout_marginTop="15dp"
+            android:maxLength="3"/>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/tv_set_encoding"
-        android:textColor="#F00F"
-        android:textColorHighlight="#F0FF"
-        android:textStyle="bold|italic"/>
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/spinnerTextEncoding"
-        android:prompt="@string/encoding_prompt"
-        android:entries="@array/encoding_array"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tv_set_rate"
+            android:textColor="#F00F"
+            android:textColorHighlight="#F0FF"
+            android:textStyle="bold|italic"
+            android:id="@+id/textView_speech_rate"
+            android:layout_marginTop="20dp"
+            android:layout_below="@+id/seekBar_speech_pitch"
+            android:layout_alignParentStart="true" />
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBar_speech_rate"
+            android:layout_alignBottom="@+id/et_speech_rate"
+            android:layout_alignParentStart="true"
+            android:max="100"
+            android:progress="10"
+            android:layout_alignTop="@+id/et_speech_rate"
+            android:layout_toStartOf="@+id/et_speech_length" />
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/et_speak_rate_value"
+            android:id="@+id/et_speech_rate"
+            android:inputType="numberDecimal"
+            android:textColor="#F00"
+            android:textStyle="bold"
+            android:background="#1f0"
+            android:layout_below="@+id/textView_speech_rate"
+            android:layout_toRightOf="@+id/seekBar_speech_rate"
+            android:layout_marginTop="15dp"
+            android:maxLength="3" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/tv_set_length"
-        android:textColor="#F00F"
-        android:textColorHighlight="#F0FF"
-        android:textStyle="bold|italic"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tv_set_encoding"
+            android:textColor="#F00F"
+            android:textColorHighlight="#F0FF"
+            android:textStyle="bold|italic"
+            android:layout_below="@+id/seekBar_speech_rate"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="20dp"
+            android:id="@+id/textView_set_encoding" />
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinnerTextEncoding"
+            android:prompt="@string/encoding_prompt"
+            android:entries="@array/encoding_array"
+            android:layout_below="@+id/textView_set_encoding"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="15dp" />
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@integer/et_speak_length_value"
-        android:id="@+id/et_speech_length"
-        android:inputType="number"
-        android:textColor="#F00"
-        android:textStyle="bold"
-        android:background="#00000000" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tv_set_length"
+            android:textColor="#F00F"
+            android:textColorHighlight="#F0FF"
+            android:textStyle="bold|italic"
+            android:layout_below="@+id/spinnerTextEncoding"
+            android:id="@+id/textView_set_length"
+            android:layout_marginTop="20dp"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/bt_save_setting"
-        android:layout_gravity="right"
-        android:id="@+id/bt_save_setting"
-        android:textColor="#150"
-        android:textStyle="bold"/>
+        <SeekBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBar_speech_length"
+            android:layout_alignBottom="@+id/et_speech_length"
+            android:layout_alignParentStart="true"
+            android:paddingLeft="5dip"
+            android:paddingRight="5dip"
+            android:paddingBottom="2dip"
+            android:maxHeight="1dip"
+            android:minHeight="1dip"
+            android:max="10000"
+            android:progress="100"
+            android:progressDrawable="@drawable/seekbar_style"
+            android:thumb="@drawable/seekbar_thum"
+            android:background="@drawable/timg"
+            android:layout_alignTop="@+id/et_speech_length"
+            android:layout_toStartOf="@+id/bt_save_setting" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@integer/et_speak_length_value"
+            android:id="@+id/et_speech_length"
+            android:inputType="numberDecimal"
+            android:textColor="#F00"
+            android:textStyle="bold"
+            android:background="#1f0"
+            android:layout_below="@+id/textView_set_length"
+            android:layout_toRightOf="@+id/seekBar_speech_length"
+            android:layout_marginTop="15dp"
+            android:maxLength="5"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/bt_save_setting"
+            android:layout_gravity="right"
+            android:id="@+id/bt_save_setting"
+            android:textColor="#150"
+            android:textStyle="bold"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/shape"/>
+
+    </RelativeLayout>
 </LinearLayout>

@@ -130,4 +130,19 @@
         android:text="@string/button_show_file"
         android:layout_above="@+id/radioGroupLanguage"
         android:layout_toStartOf="@+id/editTextToSpeak" />
+    <RelativeLayout
+        android:layout_width="@dimen/img_home_float_parent_size"
+        android:layout_height="@dimen/img_home_float_parent_size"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true" >
+    <ImageButton
+        android:id="@+id/btn_recognize_speech"
+        android:layout_width="@dimen/img_home_float_size"
+        android:layout_height="@dimen/img_home_float_size"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="@dimen/img_home_float_margin"
+        android:layout_marginRight="@dimen/img_home_float_margin"
+        android:src="@android:drawable/ic_btn_speak_now" />
+    </RelativeLayout>
 </RelativeLayout>

@@ -5,12 +5,14 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.support.annotation.NonNull;
@@ -25,6 +27,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -77,6 +80,7 @@ public class TtsDemoActivity extends Activity implements OnInitListener,Director
     public static final int ACTIVITY_FILE_SPEECH = 2;
     public static final int ACTIVITY_TTS_SETTING = 3;
     public static final int ACTIVITY_GET_CONTENT = 4;
+    public static final int VOICE_RECOGNITION_REQUEST_CODE=5;
 
     private String language = "";
     private String encoding = "";
@@ -123,6 +127,43 @@ public class TtsDemoActivity extends Activity implements OnInitListener,Director
         // 设置默认文件名
         sSelectedFile = sSelectedDir + "/Download/license.txt";
 
+        ImageButton btn = (ImageButton) findViewById(R.id.btn_recognize_speech); // 识别按钮
+        PackageManager pm = getPackageManager();
+        List activities = pm.queryIntentActivities(new Intent(
+                RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0); // 本地识别程序
+
+        /*
+         * 此处没有使用捕捉异常，而是检测是否有语音识别程序。
+         * 也可以在startRecognizerActivity()方法中捕捉ActivityNotFoundException异常
+         */
+        if (activities.size() != 0) {
+            btn.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus){
+                        startRecognizerActivity();
+                    }
+                }
+            });
+        } else {
+            // 若检测不到语音识别程序在本机安装，测将扭铵置灰
+
+            activities = pm.queryIntentActivities( new Intent(RecognizerIntent.ACTION_WEB_SEARCH), 0); // 网络识别程序
+            if (activities.size() == 0){
+                btn.setEnabled(false);
+                Toast.makeText(TtsDemoActivity.this,"未检测到语音识别设备",Toast.LENGTH_SHORT);
+            }else {
+
+                btn.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View v, boolean hasFocus) {
+                        if (hasFocus){
+                            startWebRecognizerActivity();
+                        }
+                    }
+                });
+            }
+        }
         // button on click event
         btnSpeak.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -419,7 +460,17 @@ public class TtsDemoActivity extends Activity implements OnInitListener,Director
                 Log.d("ACTIVITY_GET_CONTENT","取消");
             }
 
-        }
+        }else if (requestCode == VOICE_RECOGNITION_REQUEST_CODE  && resultCode == RESULT_OK) { // 回调获取从谷歌得到的数据
+                // 取得语音的字符
+                ArrayList<String> results = data .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                String resultString = "";
+                for (int i = 0; i < results.size(); i++) {
+                    resultString += results.get(i);
+                }
+                Toast.makeText(this, resultString, Toast.LENGTH_SHORT).show();
+            }
+        // 语音识别后的回调，将识别的字串以Toast显示
+        super.onActivityResult(requestCode, resultCode, data);
     }
     /**
      * 获取内置SD卡路径
@@ -791,6 +842,34 @@ public class TtsDemoActivity extends Activity implements OnInitListener,Director
                     }
                 });
         alertInstall.create().show();
+    }
+
+    // 开始本地识别
+    private void startRecognizerActivity() {
+        // 通过Intent传递语音识别的模式，开启语音
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        // 语言模式和自由模式的语音识别
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        // 提示语音开始
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "开始语音");
+        // 开始语音识别
+        startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
+        // 调出识别界面
+    }
+
+    // 开始网络识别
+    private void startWebRecognizerActivity() {
+        // 通过Intent传递语音识别的模式，开启语音
+        Intent intent = new Intent(RecognizerIntent.ACTION_WEB_SEARCH);
+        // 语言模式和自由模式的语音识别
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        // 提示语音开始
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "开始语音");
+        // 开始语音识别
+        startActivityForResult(intent, VOICE_RECOGNITION_REQUEST_CODE);
+        // 调出识别界面
     }
 }
 

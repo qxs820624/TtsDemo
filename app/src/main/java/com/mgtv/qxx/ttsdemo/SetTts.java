@@ -7,6 +7,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.Toast;
@@ -24,12 +25,12 @@ public class SetTts extends Activity {
     private  static final String LOG_TAG="SetTts";
 
     private Button btSaveSetting;
-    private EditText etSpeechPitch;
-    private EditText etSpeechRate;
-    private EditText etSpeechLength;
     private String propertyFile = "";
     private Spinner spEncoding;
     private Properties properties;
+
+    private EditText etSpeechPitch,etSpeechRate,etSpeechLength;
+    private SeekBar pitchBar, rateBar,lengthBar; // 音量&语速
 
     private  static final String DEFAULT_ENCODING = "UTF-8";
 
@@ -38,10 +39,16 @@ public class SetTts extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
         btSaveSetting = (Button) findViewById(R.id.bt_save_setting);
+        spEncoding = (Spinner) findViewById(R.id.spinnerTextEncoding);
+
         etSpeechPitch = (EditText) findViewById(R.id.et_speech_pitch);
         etSpeechRate = (EditText) findViewById(R.id.et_speech_rate);
-        spEncoding = (Spinner) findViewById(R.id.spinnerTextEncoding);
         etSpeechLength = (EditText) findViewById(R.id.et_speech_length);
+
+        // 进度条
+        pitchBar = (SeekBar) findViewById(R.id.seekBar_speech_pitch) ;
+        rateBar = (SeekBar) findViewById(R.id.seekBar_speech_rate);
+        lengthBar = (SeekBar) findViewById(R.id.seekBar_speech_length) ;
 
         //新页面接收数据
         Bundle bundle = this.getIntent().getExtras();
@@ -64,6 +71,15 @@ public class SetTts extends Activity {
         etSpeechPitch.setText(properties.getProperty("SpeechPitch"));
         etSpeechRate.setText(properties.getProperty("SpeechRate"));
         etSpeechLength.setText(properties.getProperty("SpeechLength"));
+
+        float fpitchBar = Float.parseFloat(properties.getProperty("SpeechPitch")) * 10.0f;
+        pitchBar.setProgress(Integer.parseInt(String.valueOf(Math.round(fpitchBar))));
+
+        float frateBar = Float.parseFloat(properties.getProperty("SpeechRate")) * 10.0f;
+        rateBar.setProgress(Integer.parseInt(String.valueOf(Math.round(frateBar))));
+
+        lengthBar.setProgress(Integer.parseInt(properties.getProperty("SpeechLength")));
+
         String propertiesEncoding = properties.getProperty("Encoding");
         if (propertiesEncoding == null || propertiesEncoding.isEmpty()){
             propertiesEncoding = DEFAULT_ENCODING;
@@ -80,14 +96,66 @@ public class SetTts extends Activity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (start > 1){
-                    if (true){
-                        int length = Integer.parseInt(s.toString());
-                        if (length > 1000){
-                            etSpeechPitch.setText(String.valueOf(1000));
-                        }else if (length > 100){
-                            etSpeechPitch.setText(String.valueOf(100));
-                        }
+                    int length = Integer.parseInt(s.toString());
+                    if (length > 10000){
+                        length = 10000;
+                    }else if (length < 100){
+                        length = 100;
                     }
+                    etSpeechLength.setText(String.valueOf(length));
+                    lengthBar.setProgress(Math.round(length));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //TODO
+            }
+        });
+
+        etSpeechPitch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                //TODO
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (start > 1){
+                    Float val = Float.parseFloat(s.toString());
+                    if (val > 10.0){
+                        val = 10.0f;
+                    }else if (val < 0.1){
+                        val = 0.1f;
+                    }
+                    etSpeechPitch.setText(String.valueOf(val));
+                    pitchBar.setProgress(Math.round(val*10));
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //TODO
+            }
+        });
+
+        etSpeechRate.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                //TODO
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (start > 1){
+                    Float val = Float.parseFloat(s.toString());
+                    if (val > 10.0){
+                        val = 10.0f;
+                    }else if (val < 0.1){
+                        val = 0.1f;
+                    }
+                    etSpeechRate.setText(String.valueOf(val));
+                    rateBar.setProgress(Math.round(val*10));
                 }
             }
 
@@ -152,6 +220,55 @@ public class SetTts extends Activity {
                 saveConfig(propertyFile,properties);
                 Toast.makeText(getBaseContext(),"保存配置成功",Toast.LENGTH_SHORT);
                 SetTts.this.finish();
+            }
+        });
+
+        pitchBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                etSpeechPitch.setText(String.valueOf(progress*0.1f));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        rateBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                etSpeechRate.setText(String.valueOf(progress*0.1f));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        lengthBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                etSpeechLength.setText(String.valueOf(progress));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
     }

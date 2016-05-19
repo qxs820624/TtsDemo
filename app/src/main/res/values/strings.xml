@@ -17,8 +17,8 @@
     <string name="tv_set_pitch">Set Speech Pitch</string>
     <string name="tv_set_rate">Set Speech Rate</string>
     <string name="tv_set_encoding">Set File Encoding, Default UTF-8</string>
-    <string name="et_speak_pitch_value">0.8</string>
-    <string name="et_speak_rate_value">1.5</string>
+    <string name="et_speak_pitch_value">0.9</string>
+    <string name="et_speak_rate_value">0.9</string>
     <string name="bt_save_setting">Save</string>
     <string name="menu_setting">Setting</string>
     <string name="encoding_prompt">Select Encoding</string>

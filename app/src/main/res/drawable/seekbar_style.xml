@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@android:id/background"
+        android:drawable="@drawable/timg">
+        <shape>
+            <corners android:radius="10dip" />
+            <gradient android:startColor="#ffffffff"
+                android:centerColor="#ff000000" android:endColor="#ff808A87"
+                android:centerY="1" android:angle="270" />
+        </shape>
+    </item>
+
+    <item android:id="@android:id/progress"
+        android:drawable="@drawable/sixteenth_notes">
+        <clip>
+            <shape>
+                <corners android:radius="10dip" />
+                <gradient android:startColor="#ffffffff"
+                    android:centerColor="#ffFFFF00" android:endColor="#ffAABD00"
+                    android:centerY="1" android:angle="270" />
+            </shape>
+        </clip>
+    </item>
+
+    <item android:id="@android:id/secondaryProgress"
+        android:drawable="@drawable/eighth_notes">
+        <clip>
+            <shape>
+                <corners android:radius="10dip" />
+                <gradient android:startColor="#ffffffff"
+                    android:centerColor="#CFE" android:endColor="#FA0"
+                    android:centerY="1" android:angle="270" />
+            </shape>
+        </clip>
+    </item>
+</layer-list>

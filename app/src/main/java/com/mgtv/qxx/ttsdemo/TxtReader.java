@@ -36,7 +36,7 @@ public class TxtReader extends Activity implements
 
     private static final String LOG_TAG = "TxtReader";
     private static final int BUF_SIZE = 1024 * 2;
-    private static final int BUF_SHOW = 1000;
+    private static final int BUF_SHOW = 10;
 
     private static final int ARROW_UP = 1;
     private static final int ARROW_DOWN = 2;
