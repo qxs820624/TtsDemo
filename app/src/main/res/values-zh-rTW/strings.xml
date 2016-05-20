@@ -5,7 +5,7 @@
     <string name="button_speak_out">朗读</string>
     <string name="check_box_speak_while_write">边写边读</string>
     <string name="choose_directory">...</string>
-    <string name="edit_text_speak_hint">TEXT TO SPEAK</string>
+    <string name="edit_text_speak_hint">输入需要朗读的文本</string>
     <string name="none">/storage/sdcard2</string>
     <string name="radio_english">英语</string>
     <string name="radio_group_content">选择语言</string>
@@ -24,4 +24,10 @@
     <string name="tv_set_encoding">设置打开文件的编码方式，默认UTF-8</string>
     <string name="tv_set_length">设置每次读取文件的长度，输入偶数，最小100，最大1000</string>
     <string name="tts_package">com.google.android.tts-3.8.16-210308161.apk</string>
+    <string name="dialog_title">提示</string>
+    <string name="download">下載</string>
+    <string name="dialog_content">未找到語音識別設備,是否下載？</string>
+    <string name="cancel">取消</string>
+    <string name="title_activity_ocr">图片识别</string>
+    <string name="voice_url">https://play.google.com/store/apps/details?id=com.google.android.voicesearch</string>
 </resources>

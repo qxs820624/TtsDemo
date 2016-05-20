@@ -59,17 +59,20 @@ public class ParseStringEncoding {
             if(m.find()){
                 //Toast.makeText(this,"输入的是数字", Toast.LENGTH_SHORT).show();
                 String txt1 = m.group();
+                Log.e(LOG_TAG,txt1);
                 if (txt1 == null || txt.isEmpty()){
-                    Log.e(LOG_TAG,"解析结束");
+                    Log.e(LOG_TAG,"txt1 异常，解析结束");
                     return EsLists;
                 }
+
+                EncodingString es = new EncodingString(txt1,txtType);
+                EsLists.add(es.getValue());
+
                 i += txt1.length();
                 if (i < tlen){
                     // Log.e(LOG_TAG,txt1 + txtType);
                     newTxt = txt.substring(i,tlen);
                     // Log.e(LOG_TAG,newTxt);
-                    EncodingString es = new EncodingString(txt1,txtType);
-                    EsLists.add(es.getValue());
                 }else {
                     Log.i(LOG_TAG,"解析结束");
                     break;

@@ -26,4 +26,9 @@
     <integer name="et_speak_length_value">100</integer>
     <string name="tts_package">com.google.android.tts-3.8.16-210308161.apk</string>
     <string name="title_activity_ocr">OcrActivity</string>
+    <string name="voice_url">https://play.google.com/store/apps/details?id=com.google.android.voicesearch</string>
+    <string name="dialog_title">Notes</string>
+    <string name="cancel">Cancle</string>
+    <string name="download">Download</string>
+    <string name="dialog_content">Don\'t find Recgonize devices, download it?</string>
 </resources>

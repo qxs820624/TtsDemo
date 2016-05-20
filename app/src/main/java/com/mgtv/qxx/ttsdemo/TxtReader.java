@@ -159,13 +159,13 @@ public class TxtReader extends Activity implements
             speechRate  = st.getSpeechRate();
 
         }else {
-            Toast.makeText(this,"传入参数错误", Toast.LENGTH_SHORT);
+            Toast.makeText(this,"传入参数错误", Toast.LENGTH_SHORT).show();
             this.finish();
         }
 
         if (!isInited || fileTts == null){
             Log.e(LOG_TAG,"onCreate init TextToSpeech");
-            Toast.makeText(this,"Tts错误", Toast.LENGTH_SHORT);
+            Toast.makeText(this,"Tts错误", Toast.LENGTH_SHORT).show();
             this.finish();
         }
 

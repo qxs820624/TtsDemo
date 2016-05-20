@@ -32,7 +32,43 @@ public class SetTts extends Activity {
     private EditText etSpeechPitch,etSpeechRate,etSpeechLength;
     private SeekBar pitchBar, rateBar,lengthBar; // 音量&语速
 
+    private String language, encoding;
+    private float speechPitch, speechRate;
+    private int speechLength;
+
     private  static final String DEFAULT_ENCODING = "UTF-8";
+
+
+    public SetTts(String ttsSettingFile){
+        this.propertyFile = ttsSettingFile;
+    }
+
+    public float getSpeechPitch(){
+        return this.speechPitch;
+    }
+
+    public float getSpeechRate(){
+        return this.speechRate;
+    }
+
+    public String getEncoding(){
+        return this.encoding;
+    }
+
+    public String getLanguage(){
+        return this.language;
+    }
+
+    public int getSpeechLength(){
+        return this.speechLength;
+    }
+
+    public void setTtsLanguage(String language){
+        this.language = language;
+        Properties properties = loadConfig();
+        properties.put("Language",language);
+        saveConfig(properties);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +91,7 @@ public class SetTts extends Activity {
         propertyFile = bundle.getString("PropertyFile");
 
         // 获取配置
-        properties = loadConfig(propertyFile);
+        properties = loadConfig();
         if(properties==null){
             //配置文件不存在的时候创建配置文件 初始化配置信息
             properties=new Properties();
@@ -66,7 +102,7 @@ public class SetTts extends Activity {
 
             properties.setProperty("Encoding", "UTF-8");
             properties.setProperty("SpeechLength", "200");
-            saveConfig(propertyFile,properties);
+            saveConfig(properties);
         }
         etSpeechPitch.setText(properties.getProperty("SpeechPitch"));
         etSpeechRate.setText(properties.getProperty("SpeechRate"));
@@ -171,9 +207,8 @@ public class SetTts extends Activity {
                 String pitch = etSpeechPitch.getText().toString();
                 String rate = etSpeechRate.getText().toString();
                 String length = etSpeechLength.getText().toString();
-                // Log.e(LOG_TAG,pitch);
-                // Log.e(LOG_TAG,rate);
-                properties = loadConfig(propertyFile);
+
+                properties = loadConfig();
 
                 if(properties==null){
                     //配置文件不存在的时候创建配置文件 初始化配置信息
@@ -186,25 +221,25 @@ public class SetTts extends Activity {
                     properties.put("Encoding", "UTF-8");
                     properties.put("SpeechLength", "200"); //也可以添加基本类型数据 get时就需要强制转换成封装类型
 
-                    saveConfig(propertyFile,properties);
+                    saveConfig(properties);
                 }
 
                 if (!pitch.isEmpty()){
-                    // Toast.makeText(getBaseContext(),pitch,Toast.LENGTH_SHORT);
+                    // Toast.makeText(getBaseContext(),pitch,Toast.LENGTH_SHORT).show();
                     properties.put("SpeechPitch",pitch);
                 }else{
                     properties.put("SpeechPitch","0.9");
                 }
 
                 if (!rate.isEmpty()){
-                    // Toast.makeText(getBaseContext(),rate,Toast.LENGTH_SHORT);
+                    // Toast.makeText(getBaseContext(),rate,Toast.LENGTH_SHORT).show();
                     properties.put("SpeechRate",rate);
                 }else{
                     properties.put("SpeechRate","0.9");
                 }
 
                 if (!length.isEmpty()){
-                    // Toast.makeText(getBaseContext(),length,Toast.LENGTH_SHORT);
+                    // Toast.makeText(getBaseContext(),length,Toast.LENGTH_SHORT).show();
                     properties.put("SpeechLength",length);
                 }else{
                     properties.put("SpeechLength","200");
@@ -217,8 +252,8 @@ public class SetTts extends Activity {
                     properties.put("Encoding","UTF-8");
                 }
 
-                saveConfig(propertyFile,properties);
-                Toast.makeText(getBaseContext(),"保存配置成功",Toast.LENGTH_SHORT);
+                saveConfig(properties);
+                Toast.makeText(getBaseContext(),"保存配置成功",Toast.LENGTH_SHORT).show();
                 SetTts.this.finish();
             }
         });
@@ -284,10 +319,10 @@ public class SetTts extends Activity {
     }
 
     //读取配置文件
-    public Properties loadConfig(String file) {
+    public Properties loadConfig() {
         Properties properties = new Properties();
         try {
-            FileInputStream s = new FileInputStream(file);
+            FileInputStream s = new FileInputStream(propertyFile);
             properties.load(s);
         } catch (Exception e) {
             e.printStackTrace();
@@ -297,9 +332,9 @@ public class SetTts extends Activity {
     }
 
     //保存配置文件
-    public boolean saveConfig( String file, Properties properties) {
+    public boolean saveConfig(Properties properties) {
         try {
-            File fil=new File(file);
+            File fil=new File(propertyFile);
             if(!fil.exists())
                 fil.createNewFile();
             FileOutputStream s = new FileOutputStream(fil);
@@ -326,4 +361,71 @@ public class SetTts extends Activity {
             }
         }
     }
+
+    public void getTtsSettings(String propFile){
+        boolean b=false;
+        String s="";
+        int i=0;
+        Properties prop;
+        prop=loadConfig(); //"/mnt/sdcard/config.properties"
+        if(prop==null){
+            //配置文件不存在的时候创建配置文件 初始化配置信息
+            prop=new Properties();
+
+            prop.setProperty("SpeechPitch","0.8");
+            prop.setProperty("SpeechRate","1.5");
+            prop.setProperty("Language","Chinese");
+
+            prop.put("Encoding", "UTF-8");
+            prop.put("SpeechLength", "200"); //也可以添加基本类型数据 get时就需要强制转换成封装类型
+            saveConfig(prop);
+        }
+
+
+        String sSpeechPitch = prop.getProperty("SpeechPitch");
+        if (sSpeechPitch == null || sSpeechPitch.isEmpty()){
+            speechPitch = 0.9f;
+        }else{
+            speechPitch = Float.valueOf(prop.getProperty("SpeechPitch")).floatValue();
+        }
+
+        String sSpeechRate = prop.getProperty("SpeechRate");
+        if (sSpeechRate == null || sSpeechRate.isEmpty()){
+            speechRate = 0.9f;
+        }else{
+            speechRate = Float.valueOf(prop.getProperty("SpeechRate")).floatValue();
+        }
+
+        language = prop.getProperty("Language");
+        encoding = prop.getProperty("Encoding");
+
+        String sSpeechLength = prop.getProperty("SpeechLength");
+        if (sSpeechLength == null || sSpeechLength.isEmpty()) {
+            speechLength = 200;
+        }else {
+            speechLength = Integer.parseInt(prop.getProperty("SpeechLength"));
+        }
+
+        if (encoding == null || encoding.isEmpty()){
+            encoding = DEFAULT_ENCODING;
+        }
+        if (language == null || language.isEmpty()){
+            language = "Chinese";
+        }
+
+        if (speechLength < 200){
+            speechLength = 200;
+        }else if (speechLength > 1000) {
+            speechLength = 1000;
+        }
+
+        if (speechPitch <= 0){
+            speechPitch = 0.9f;
+        }
+        if (speechRate <= 0){
+            speechRate = 0.9f;
+        }
+        saveConfig(prop);
+    }
+
 }
