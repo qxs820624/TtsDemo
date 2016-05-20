@@ -116,8 +116,9 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "进行语音识别，请确保麦克风的权限", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                startVoiceRecognitionActivity();
             }
         });
         PackageManager pm = getPackageManager();
@@ -132,7 +133,7 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
             // 若检测不到语音识别程序在本机安装，测将扭铵置灰
             activities = pm.queryIntentActivities( new Intent(RecognizerIntent.ACTION_WEB_SEARCH), 0); // 网络识别程序
             if (activities.size() == 0){
-                fab.setEnabled(false);
+                // fab.setEnabled(false);
                 Toast.makeText(TtsDemoActivity.this,"未检测到语音识别设备",Toast.LENGTH_SHORT).show();
             }
         }
@@ -412,7 +413,7 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
     }
 
     private void showDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getBaseContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.dialog_content);
         builder.setTitle(R.string.dialog_title);
         builder.setNegativeButton(R.string.download,
