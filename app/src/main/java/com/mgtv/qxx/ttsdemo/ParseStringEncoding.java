@@ -34,7 +34,7 @@ public class ParseStringEncoding {
         String newTxt = "";
         newTxt = txt;
         int tlen = txt.length();
-        Log.e(LOG_TAG,"tlen : " + String.valueOf(tlen));
+        // Log.e(LOG_TAG,"tlen : " + String.valueOf(tlen));
         for (int i = 0;i<txt.length();){
             char[] chars=newTxt.toCharArray();
             byte[] bytes=(""+chars[0]).getBytes();
@@ -59,7 +59,7 @@ public class ParseStringEncoding {
             if(m.find()){
                 //Toast.makeText(this,"输入的是数字", Toast.LENGTH_SHORT).show();
                 String txt1 = m.group();
-                Log.e(LOG_TAG,txt1);
+                // Log.e(LOG_TAG,txt1);
                 if (txt1 == null || txt.isEmpty()){
                     Log.e(LOG_TAG,"txt1 异常，解析结束");
                     return EsLists;

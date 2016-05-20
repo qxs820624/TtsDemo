@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -40,7 +41,15 @@ public class SetTts extends Activity {
 
 
     public SetTts(String ttsSettingFile){
-        this.propertyFile = ttsSettingFile;
+        Log.d(LOG_TAG,"SetTts ttsSettingFile");
+        if (ttsSettingFile.length() > 0 ){
+            this.propertyFile = ttsSettingFile;
+        }
+    }
+
+    // constructor
+    public SetTts(){
+        Log.d(LOG_TAG,"Start SetTts Activity");
     }
 
     public float getSpeechPitch(){
@@ -73,6 +82,9 @@ public class SetTts extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.e(LOG_TAG,"SetTts");
+
         setContentView(R.layout.settings);
         btSaveSetting = (Button) findViewById(R.id.bt_save_setting);
         spEncoding = (Spinner) findViewById(R.id.spinnerTextEncoding);

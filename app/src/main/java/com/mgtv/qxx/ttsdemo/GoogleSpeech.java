@@ -60,6 +60,7 @@ public class GoogleSpeech implements TextToSpeech.OnInitListener{
 
     private Context context;
 
+    // constructor
     public GoogleSpeech(Context context, Button btnSpeak, String ttsSettingFile){
         this.btnSpeak = btnSpeak;
         this.ttsSettingFile = ttsSettingFile;
@@ -68,10 +69,15 @@ public class GoogleSpeech implements TextToSpeech.OnInitListener{
         initTts();
     }
 
+    // constructor
+    public GoogleSpeech(){
+        Log.d(LOG_TAG,"Start GoogleSpeech");
+    }
+
     @Override
     public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
-            Log.e("TTS", "Initialization Success!");
+            // Log.e("TTS", "Initialization Success!");
             displayToast("初始化成功！");
             isInited = true;
             btnSpeak.setEnabled(true);
@@ -87,7 +93,6 @@ public class GoogleSpeech implements TextToSpeech.OnInitListener{
             Log.e("TTS", "Initilization Failed!");
             displayToast("初始化错误！");
             isInited = false;
-            // installApkFromAssets();
         }
     }
 
@@ -288,7 +293,7 @@ public class GoogleSpeech implements TextToSpeech.OnInitListener{
 
                 ArrayList<ParseStringEncoding.EncodingString> EsLists = pse.Parse(text);
 
-                Log.e(LOG_TAG,String.valueOf(EsLists.size()));
+                // Log.e(LOG_TAG,String.valueOf(EsLists.size()));
 
                 // 为了效率牺牲代码可读性
                 if (Build.VERSION.SDK_INT < 21){
@@ -298,8 +303,8 @@ public class GoogleSpeech implements TextToSpeech.OnInitListener{
                     }
                 }else{
                     for (ParseStringEncoding.EncodingString es: EsLists){
-                        Log.e(LOG_TAG,String.valueOf(es.txtType));
-                        Log.e(LOG_TAG,String.valueOf(es.txt));
+                        // Log.e(LOG_TAG,String.valueOf(es.txtType));
+                        // Log.e(LOG_TAG,String.valueOf(es.txt));
                         mTts.setLanguage(es.txtType);
                         mTts.speak(text,TextToSpeech.QUEUE_ADD,null,TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID);
                     }

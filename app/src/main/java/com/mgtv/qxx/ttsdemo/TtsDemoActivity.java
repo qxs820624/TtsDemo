@@ -141,10 +141,18 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
         btnSpeak.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
+                String text = txtText.getText().toString();
+                File f = new File(text);
+                if (f.exists()){
+                    bReadFile = true;
+                }else {
+                    bReadFile = false;
+                }
                 if (bReadFile){
                     OpenTxtReader();
+                }else{
+                    googleSpeech.speakOut(text, bReadFile);
                 }
-                googleSpeech.speakOut(txtText.getText().toString(), bReadFile);
             }
         });
 
@@ -549,7 +557,7 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
 
         // 新打开的activity返回的数据
         startActivity(intent); // 不需要返回值
-        // startActivityForResult(intent, ACTIVITY_FILE_SPEECH); // 需要返回值
+        // startActivityForResult(intent, ACTIVITY_FILE_SPEECH); // 需要返回, 以便重置bReadFile变量
     }
 
 

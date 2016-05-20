@@ -379,7 +379,7 @@ public class TxtReader extends Activity implements
     private void speakOut(String text) {
         //Log.d(LOG_TAG,"speakOut " + text);
         if (isInited){
-            Log.e(LOG_TAG,"TTS引擎初始化成功");
+            // Log.d(LOG_TAG,"TTS引擎初始化成功");
             int result = -1;
             /*
             int textLength = text.length();
