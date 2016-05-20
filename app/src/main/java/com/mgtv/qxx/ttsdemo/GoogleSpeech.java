@@ -162,8 +162,10 @@ public class GoogleSpeech implements TextToSpeech.OnInitListener{
     }
 
     public void finish(){
-        return;
+        ttsStop();
+        ttsShutDown();
     }
+
     private Context mContext;
 
     // 安装tts的Apk
@@ -279,12 +281,14 @@ public class GoogleSpeech implements TextToSpeech.OnInitListener{
     public void speakOut(String text, boolean bReadFile) {
         initTts();
         if (isInited){
-            int result = -1;
+            int quequeMode = TextToSpeech.QUEUE_ADD;
             // 每次启动的时候都获取一下配置
             ttsSetting.getTtsSettings(ttsSettingFile);
             setPitch(ttsSetting.getSpeechPitch());
             setSpeechRate(ttsSetting.getSpeechRate());
-
+            if (!bReadFile){
+                quequeMode = TextToSpeech.QUEUE_FLUSH;
+            }
             // displayToast(this.sSelectedLanguage);
             if (!bReadFile){
                 // 当TTS调用speak方法时，它会中断当前实例正在运行的任务(也可以理解为清除当前语音任务，转而执行新的语音任务)
@@ -299,14 +303,14 @@ public class GoogleSpeech implements TextToSpeech.OnInitListener{
                 if (Build.VERSION.SDK_INT < 21){
                     for (ParseStringEncoding.EncodingString es: EsLists){
                         mTts.setLanguage(es.txtType);
-                        mTts.speak(es.txt, TextToSpeech.QUEUE_ADD, null);
+                        mTts.speak(es.txt, quequeMode, null);
                     }
                 }else{
                     for (ParseStringEncoding.EncodingString es: EsLists){
                         // Log.e(LOG_TAG,String.valueOf(es.txtType));
                         // Log.e(LOG_TAG,String.valueOf(es.txt));
                         mTts.setLanguage(es.txtType);
-                        mTts.speak(text,TextToSpeech.QUEUE_ADD,null,TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID);
+                        mTts.speak(text, quequeMode, null,TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID);
                     }
                 }
             }

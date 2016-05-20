@@ -57,7 +57,7 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
 
     private Button btnSpeak;
     private Button btnSave;
-    private EditText txtText;
+    private EditText etTextToSpeech;
     private CheckBox checkBoxRw;
     private static  String sSelectedLanguage = "Chinese";
     private static  String innerSdCardPath = "";
@@ -75,6 +75,7 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
     public static final int ACTIVITY_GET_CONTENT = 1;
     public static final int VOICE_RECOGNITION_REQUEST_CODE=2;
     public static final int REQ_CHECK_TTS_DATA=3;
+    public static final int REQ_OCR=4;
 
     private String ttsSettingFile = "";
 
@@ -85,17 +86,17 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
         //
         btnSpeak = (Button) findViewById(R.id.buttonSpeakOut);
         btnSave = (Button) findViewById(R.id.buttonSaveWave);
-        txtText = (EditText) findViewById(R.id.editTextToSpeak);
+        etTextToSpeech = (EditText) findViewById(R.id.editTextToSpeak);
         checkBoxRw = (CheckBox) findViewById(R.id.checkBoxReadWrite);
 
         // 获取SD卡路径
-        String inPath = getInnerSDCardPath();
+        innerSdCardPath = getInnerSDCardPath();
         List<String> extPaths = getExtSDCardPath();
         for (String path : extPaths) {
             externSdCardPath = path;
         }
         if (externSdCardPath.isEmpty()){
-            sSelectedDir = inPath;
+            sSelectedDir = innerSdCardPath;
         }else {
             sSelectedDir = externSdCardPath;
         }
@@ -138,11 +139,22 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
             }
         }
 
+
+        FloatingActionButton fab_ocr = (FloatingActionButton) findViewById(R.id.fab_ocr); // 识别按钮
+        fab_ocr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "进行图像识别，请确保照相机的权限", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                startOcrActivity();
+            }
+        });
+
         // button on click event
         btnSpeak.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                String text = txtText.getText().toString();
+                String text = etTextToSpeech.getText().toString();
                 File f = new File(text);
                 if (f.exists()){
                     bReadFile = true;
@@ -152,6 +164,7 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
                 if (bReadFile){
                     OpenTxtReader();
                 }else{
+                    Log.e("btnSpeak",text);
                     googleSpeech.speakOut(text, bReadFile);
                 }
             }
@@ -161,18 +174,15 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
             @Override
             public void onClick(View arg0) {
                 //将EditText里的内容保存为语音文件
-                SimpleDateFormat formatter    =   new    SimpleDateFormat("yyyy_MM_dd_HHmmss");
-                Date curDate    =   new    Date(System.currentTimeMillis());//获取当前时间
-                String    strCurrentTime    =    formatter.format(curDate);
-
-                String text = txtText.getText().toString();
+                String strCurrentTime    = getFormattedTime();
+                String text = etTextToSpeech.getText().toString();
                 String filePath = sSelectedDir+"/speak_"+strCurrentTime+".wav";
                 googleSpeech.saveToWav(filePath,text);
             }
         });
 
         //EditText内容变化监听
-        txtText.addTextChangedListener(mTextWatcher);
+        etTextToSpeech.addTextChangedListener(mTextWatcher);
         tvShowLang = (TextView) this.findViewById(R.id.textViewShowLanguage);
         RadioGroup group = (RadioGroup)this.findViewById(R.id.radioGroupLanguage);
 
@@ -277,12 +287,12 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
 
     private TextWatcher mTextWatcher = new TextWatcher(){
         @Override
-        public void afterTextChanged(Editable s){
+        public void afterTextChanged(Editable editText){
             //如果是边写边读
-            if(checkBoxRw.isChecked()&&(s.length()!=0)){
+            if(checkBoxRw.isChecked()&&(editText.length()!=0)){
                 //获得EditText的所有内容
-                String text = s.toString();
-                googleSpeech.speakOut(text.substring(s.length()-1), bReadFile);
+                String text = editText.toString();
+                googleSpeech.speakOut(text.substring(editText.length()-1), bReadFile);
             }
         }
 
@@ -361,7 +371,7 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
                     for (int i = 0; i < results.size(); i++) {
                         resultString += results.get(i);
                     }
-
+                    etTextToSpeech.setText(resultString);
                     Toast.makeText(this, resultString, Toast.LENGTH_SHORT).show();
                 }else {
                     Toast.makeText(getBaseContext(),"檢測失敗，請重新點擊識別!", Toast.LENGTH_SHORT).show();
@@ -377,6 +387,13 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
                 }else{
                     googleSpeech.notifyReinstallDialog(); // 提示用户是否重装TTS引擎数据的对话框
                 }
+        } else if(REQ_OCR == requestCode) {
+            if (data == null) {
+                return;
+            }else if (resultCode != RESULT_OK){
+                Log.d("REQ_OCR","onActivityResult: bail due to resultCode=" + resultCode);
+                return;
+            }
         }
         // 语音识别后的回调，将识别的字串以Toast显示
         super.onActivityResult(requestCode, resultCode, data);
@@ -388,6 +405,26 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
      */
     public String getInnerSDCardPath() {
         return Environment.getExternalStorageDirectory().getPath();
+    }
+
+    public String getFormattedTime(){
+        SimpleDateFormat formatter    =   new    SimpleDateFormat("yyyy_MM_dd_HHmmss");
+        Date curDate    =   new    Date(System.currentTimeMillis());//获取当前时间
+        return formatter.format(curDate);
+    }
+
+    private void startOcrActivity(){
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        File path = new File(innerSdCardPath);
+        if(!path.exists())
+            path.mkdirs();
+        String mstrFileName = getFormattedTime() + ".jpg";
+        String mstrFilePath = innerSdCardPath + "/DCIM/" + mstrFileName;
+        Log.e("REQ_OCR", mstrFilePath);
+        File file = new File(mstrFilePath);
+        Uri uri = Uri.fromFile(file);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        startActivityForResult(intent, REQ_OCR);
     }
 
     /**
@@ -561,7 +598,17 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
         // startActivityForResult(intent, ACTIVITY_FILE_SPEECH); // 需要返回, 以便重置bReadFile变量
     }
 
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        googleSpeech.finish();
+    }
 
+    @Override
+    public void finish(){
+        super.finish();
+        googleSpeech.finish();
+    }
 }
 
 

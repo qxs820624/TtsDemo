@@ -130,17 +130,24 @@
         android:text="@string/button_show_file"
         android:layout_above="@+id/radioGroupLanguage"
         android:layout_toStartOf="@+id/editTextToSpeak" />
-    <RelativeLayout
-        android:layout_width="@dimen/img_home_float_parent_size"
-        android:layout_height="@dimen/img_home_float_parent_size"
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/voice_search"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true" >
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@android:drawable/ic_btn_speak_now" />
-    </RelativeLayout>
+        android:layout_alignParentRight="true" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_ocr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ocr"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true" />
+
 </RelativeLayout>
