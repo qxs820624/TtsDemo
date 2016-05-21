@@ -150,6 +150,16 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
             }
         });
 
+        FloatingActionButton fab_camera2 = (FloatingActionButton) findViewById(R.id.fab_camera2);
+        fab_camera2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "进行相机专业模式，请确保照相机的权限", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                startCamera2Activity();
+            }
+        });
+
         // button on click event
         btnSpeak.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -411,6 +421,11 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
         SimpleDateFormat formatter    =   new    SimpleDateFormat("yyyy_MM_dd_HHmmss");
         Date curDate    =   new    Date(System.currentTimeMillis());//获取当前时间
         return formatter.format(curDate);
+    }
+
+    private void startCamera2Activity(){
+        Intent intent = new Intent(this, CameraActivity.class);
+        startActivity(intent);
     }
 
     private void startOcrActivity(){
