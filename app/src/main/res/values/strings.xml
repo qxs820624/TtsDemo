@@ -32,7 +32,14 @@
     <string name="download">Download</string>
     <string name="dialog_content">Don\'t find Recgonize devices, download it?</string>
 
-    <string name="title_activity_camera">CameraActivity</string>
-    <string name="dummy_button">Dummy Button</string>
+    <string name="title_activity_camera">ProfessionalCamera</string>
+    <string name="dummy_button">Dummy Content</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+
+
+    <string name="picture">Picture</string>
+    <string name="description_info">Info</string>
+    <string name="request_permission">This sample needs camera permission.</string>
+    <string name="camera_error">This device doesn\'t support Camera2 API.</string>
+
 </resources>

@@ -30,4 +30,12 @@
     <string name="cancel">取消</string>
     <string name="title_activity_ocr">图片识别</string>
     <string name="voice_url">https://play.google.com/store/apps/details?id=com.google.android.voicesearch</string>
+    <string name="camera_error">本设备不支持相机2.0接口</string>
+    <string name="description_info">信息</string>
+    <string name="title_activity_camera">相机专家</string>
+    <string name="picture">图片</string>
+    <string name="request_permission">您需要确认相机权限是否打开</string>
+    <string name="dummy_button">范例</string>
+    <string name="dummy_content">范例</string>
+    <string name="intro_message"><![CDATA[               这是专业相机的示例。从源码分析怎么使用相机的预览和拍照          ]]></string>
 </resources>
