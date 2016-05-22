@@ -15,40 +15,57 @@
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
     <com.mgtv.qxx.ttsdemo.AutoFitTextureView
         android:id="@+id/texture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true" />
 
-    <FrameLayout
+    <!--FrameLayout
         android:id="@+id/control"
         android:layout_width="match_parent"
-        android:layout_height="112dp"
+        android:layout_height="72dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:background="@color/control_background">
+    </FrameLayout-->
 
-        <Button
-            android:id="@+id/picture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/picture" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/picture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/picture"
+        android:padding="2dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true" />
 
-        <ImageButton
-            android:id="@+id/info"
-            android:contentDescription="@string/description_info"
-            style="@android:style/Widget.Material.Light.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|right"
-            android:padding="20dp"
-            android:src="@mipmap/ic_action_info" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_ocr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:padding="2dp"
+        android:layout_marginLeft="@dimen/fab_margin"
+        android:src="@android:drawable/ic_menu_add"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true" />
 
-    </FrameLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/info"
+        android:contentDescription="@string/description_info"
+        style="@android:style/Widget.Material.Light.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|right"
+        android:padding="2dp"
+        android:src="@mipmap/ic_action_info"
+        android:layout_marginLeft="@dimen/fab_camera_margin"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true" />
 
 </RelativeLayout>
