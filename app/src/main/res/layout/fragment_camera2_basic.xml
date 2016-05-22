@@ -14,9 +14,15 @@
  limitations under the License.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:layout_height="wrap_content"
+    android:fitsSystemWindows="true"
+    style="?metaButtonBarStyle"
+    android:layout_gravity="bottom|center_horizontal"
+    android:background="@color/black_overlay"
+    android:orientation="horizontal"
+    tools:ignore="UselessParent">
 
     <com.mgtv.qxx.ttsdemo.AutoFitTextureView
         android:id="@+id/texture"
@@ -35,37 +41,39 @@
     </FrameLayout-->
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/picture"
+        android:id="@+id/info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:src="@mipmap/sixteenth_notes"
+        android:layout_gravity="bottom|start"
         android:text="@string/picture"
         android:padding="2dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true" />
+        android:layout_alignParentLeft="true"
+        android:textSize="50sp"
+        android:textStyle="bold" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_ocr"
+        android:id="@+id/leave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:padding="2dp"
         android:layout_marginLeft="@dimen/fab_margin"
-        android:src="@android:drawable/ic_menu_add"
+        android:src="@mipmap/runner"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true" />
+        android:layout_alignParentRight="true" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/info"
+        android:id="@+id/picture"
         android:contentDescription="@string/description_info"
         style="@android:style/Widget.Material.Light.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|right"
+        android:layout_gravity="center_vertical|center"
         android:padding="2dp"
-        android:src="@mipmap/ic_action_info"
-        android:layout_marginLeft="@dimen/fab_camera_margin"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true" />
+        android:src="@mipmap/capture"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>
