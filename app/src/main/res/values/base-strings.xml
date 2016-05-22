@@ -15,7 +15,8 @@
  limitations under the License.
 -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:locale="Us">
     <string name="app_camera2_name">Camera2Basic</string>
     <string name="intro_message">
         <![CDATA[
