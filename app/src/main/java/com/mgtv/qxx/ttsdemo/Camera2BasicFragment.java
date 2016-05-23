@@ -164,6 +164,7 @@ public class Camera2BasicFragment extends Fragment
      * ID of the current {@link CameraDevice}.
      */
     private String mCameraId;
+    private Integer iCameraId = CameraCharacteristics.LENS_FACING_BACK;
 
     /**
      * An {@link AutoFitTextureView} for camera preview.
@@ -278,6 +279,7 @@ public class Camera2BasicFragment extends Fragment
      * Whether the current camera device supports Flash or not.
      */
     private boolean mFlashSupported;
+    private boolean mFlashAllowed = false;
 
     /**
      * Orientation of the camera sensor
@@ -432,6 +434,9 @@ public class Camera2BasicFragment extends Fragment
     public void onViewCreated(final View view, Bundle savedInstanceState) {
         view.findViewById(R.id.picture).setOnClickListener(this);
         view.findViewById(R.id.info).setOnClickListener(this);
+        view.findViewById(R.id.leave).setOnClickListener(this);
+        view.findViewById(R.id.flash_switch).setOnClickListener(this);
+        view.findViewById(R.id.camera_switch).setOnClickListener(this);
         mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
     }
 
@@ -503,8 +508,12 @@ public class Camera2BasicFragment extends Fragment
                 // We don't use a front facing camera in this sample.
                 Integer facing = characteristics.get(CameraCharacteristics.LENS_FACING);
                 // 取后置摄像头: The camera device faces the opposite direction as the device's screen.
-                if (facing != null && facing == CameraCharacteristics.LENS_FACING_FRONT) {
+                // if (facing != null && facing == CameraCharacteristics.LENS_FACING_FRONT) {
+                if (facing != null && facing != iCameraId) {
                     continue;
+                }else if (facing == null){
+                    closeCamera();
+                    return;
                 }
 
                 StreamConfigurationMap map = characteristics.get(
@@ -913,13 +922,33 @@ public class Camera2BasicFragment extends Fragment
                 }
                 break;
             }
+            case R.id.leave: {
+                closeCamera();
+                stopBackgroundThread();
+                break;
+            }
+            case R.id.flash_switch: {
+                mFlashAllowed = !mFlashAllowed;
+                break;
+            }
+            case R.id.camera_switch: {
+                if (mCameraId.equalsIgnoreCase("0")){
+                    mCameraId = "1";
+                }else{
+                    mCameraId = "0";
+                }
+                break;
+            }
         }
     }
 
     private void setAutoFlash(CaptureRequest.Builder requestBuilder) {
-        if (mFlashSupported) {
+        if (mFlashSupported && mFlashAllowed) {
             requestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
                     CaptureRequest.CONTROL_AE_MODE_ON_AUTO_FLASH);
+        }else {
+            requestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
+                    CaptureRequest.CONTROL_AE_MODE_OFF);
         }
     }
 
