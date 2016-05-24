@@ -16,7 +16,7 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="hello_world" />
+        android:text="hello    world" />
 
     <TextView
         android:id="@+id/textView1"
@@ -26,7 +26,7 @@
         android:layout_below="@+id/textView2"
         android:layout_marginLeft="42dp"
         android:layout_marginTop="134dp"
-        android:text="TextView" />
+        android:text="TextView111" />
 
     <Button
         android:id="@+id/button1"
@@ -35,6 +35,6 @@
         android:layout_alignLeft="@+id/textView1"
         android:layout_below="@+id/textView2"
         android:layout_marginTop="34dp"
-        android:text="Button" />
+        android:text="识别" />
 
 </RelativeLayout>
