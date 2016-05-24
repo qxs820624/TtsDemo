@@ -28,6 +28,7 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.ImageFormat;
@@ -681,6 +682,9 @@ public class Camera2BasicFragment extends Fragment
      * Stops the background thread and its {@link Handler}.
      */
     private void stopBackgroundThread() {
+        if (mBackgroundThread == null){
+            return;
+        }
         mBackgroundThread.quitSafely();
         try {
             mBackgroundThread.join();
@@ -910,6 +914,11 @@ public class Camera2BasicFragment extends Fragment
         switch (view.getId()) {
             case R.id.picture: {
                 takePicture();
+                Intent intent = new Intent(getActivity(), OcrActivity.class);
+                Bundle bundle=new Bundle();
+                bundle.putString("picture_path",mFile.getPath());
+                intent.putExtras(bundle);
+                startActivity(intent);
                 break;
             }
             case R.id.info: {
