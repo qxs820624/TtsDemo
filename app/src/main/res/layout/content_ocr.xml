@@ -13,28 +13,51 @@
     tools:showIn="@layout/activity_ocr">
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/tv_select_picture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="hello    world" />
+        android:text="@string/ocr_tv_select_picture"
+        android:layout_marginTop="34dp"
+        android:layout_alignParentStart="true" />
 
-    <TextView
-        android:id="@+id/textView1"
+    <EditText
+        android:id="@+id/et_select_picture"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView2"
-        android:layout_below="@+id/textView2"
-        android:layout_marginLeft="42dp"
-        android:layout_marginTop="134dp"
-        android:text="TextView111" />
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="25dp"
+        android:textColor="#aaa"
+        android:hint="@string/ocr_et_select_picture"
+        android:layout_below="@id/tv_select_picture"/>
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/btn_select_picture"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="5dp"
+        android:layout_toStartOf="@+id/et_select_picture"
+        android:text="..."
+        android:layout_marginTop="25dp"
+        android:layout_alignBottom="@+id/et_select_picture"/>
+
+
+    <Button
+        android:id="@+id/btn_recognition"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView1"
-        android:layout_below="@+id/textView2"
-        android:layout_marginTop="34dp"
-        android:text="识别" />
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/btn_select_picture"
+        android:text="@string/ocr_btn_recognition"
+        android:layout_marginTop="15dp" />
+
+    <TextView
+        android:id="@+id/tv_recognition_result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/btn_recognition"
+        android:hint="@string/ocr_tv_recognition_result"
+        android:layout_marginTop="15dp" />
 
 </RelativeLayout>

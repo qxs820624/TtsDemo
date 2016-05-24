@@ -1,4 +1,5 @@
 <resources>
+    <!--  TtsDemo activity  -->
     <string name="app_name">TtsDemo</string>
     <string name="radio_group">Select a language:</string>
     <string name="choose_directory">...</string>
@@ -14,6 +15,8 @@
     <string name="text_view_speak">TEXT TO SPEAK</string>
     <string name="edit_text_speak_hint">TEXT TO SPEAK</string>
     <string name="button_show_file">Open File</string>
+
+    <!--  tts  -->
     <string name="tv_set_pitch">Set Speech Pitch</string>
     <string name="tv_set_rate">Set Speech Rate</string>
     <string name="tv_set_encoding">Set File Encoding, Default UTF-8</string>
@@ -22,10 +25,11 @@
     <string name="bt_save_setting">Save</string>
     <string name="menu_setting">Setting</string>
     <string name="encoding_prompt">Select Encoding</string>
-    <string name="tv_set_length">Set the speak length every time</string>
+    <string name="tv_set_length">Set the speak length every time, 100~10000</string>
     <integer name="et_speak_length_value">100</integer>
     <string name="tts_package">com.google.android.tts-3.8.16-210308161.apk</string>
-    <string name="title_activity_ocr">OcrActivity</string>
+
+    <!-- voice  -->
     <string name="voice_url">https://play.google.com/store/apps/details?id=com.google.android.voicesearch</string>
     <string name="dialog_title">Notes</string>
     <string name="cancel">Cancle</string>
@@ -36,10 +40,17 @@
     <string name="dummy_button">Dummy Content</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
-
+    <!-- Camera 2.0 -->
+    <string name="title_activity_ocr">OcrActivity</string>
     <string name="picture">Picture</string>
     <string name="description_info">Info</string>
     <string name="request_permission">This sample needs camera permission.</string>
     <string name="camera_error">This device doesn\'t support Camera2 API.</string>
 
+    <!-- OCR 相关 -->
+    <string name="ocr_tv_select_picture">Select the picture to do OCR</string>
+    <string name="ocr_et_select_picture">/sdcard2/DCIM/Camera/1.JPG</string>
+    <string name="ocr_btn_recognition">Recognition</string>
+    <string name="ocr_tv_recognition_result">Show the result of OCR</string>
+    <string name="ocr_init_faile_prompt">baseApi init Failed!</string>
 </resources>

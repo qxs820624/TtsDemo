@@ -22,7 +22,7 @@
     <string name="tv_set_pitch">设置朗读音高</string>
     <string name="tv_set_rate">设置朗读速度</string>
     <string name="tv_set_encoding">设置打开文件的编码方式，默认UTF-8</string>
-    <string name="tv_set_length">设置每次读取文件的长度，输入偶数，最小100，最大1000</string>
+    <string name="tv_set_length">设置每次读取文件的长度，输入偶数，最小100，最大10000</string>
     <string name="tts_package">com.google.android.tts-3.8.16-210308161.apk</string>
     <string name="dialog_title">提示</string>
     <string name="download">下载</string>
@@ -38,4 +38,9 @@
     <string name="dummy_button">范例</string>
     <string name="dummy_content">范例</string>
     <string name="intro_message"><![CDATA[               这是专业相机的示例。从源码分析怎么使用相机的预览和拍照          ]]></string>
+    <string name="ocr_btn_recognition">识别</string>
+    <string name="ocr_tv_select_picture">请选择一张图片</string>
+    <string name="ocr_et_select_picture">/sdcard2/DCIM/Camera/1.JPG</string>
+    <string name="app_camera2_name">相机</string>
+    <string name="ocr_tv_recognition_result">識別結果</string>
 </resources>
