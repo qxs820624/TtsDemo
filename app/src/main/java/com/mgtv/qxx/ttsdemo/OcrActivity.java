@@ -8,8 +8,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -19,11 +17,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.googlecode.leptonica.android.JpegIO;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.io.File;
-import java.io.StreamCorruptedException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 
 public class OcrActivity extends AppCompatActivity {
 
@@ -153,6 +151,29 @@ public class OcrActivity extends AppCompatActivity {
                     etSelectPicture.setText(path);
                 }
             }
+        }
+    }
+
+    /**
+     * Created on 2010-7-13
+     * <p>Discription:[convert GIF->JPG GIF->PNG PNG->GIF(X) PNG->JPG ]</p>
+     * @param source
+     * @param formatName
+     * @param result
+     * @author:[shixing_11@sina.com]
+     */
+    public static void convert(String source, String formatName, String result)
+    {
+        try
+        {
+            File f = new File(source);
+            f.canRead();
+            BufferedImage src = ImageIO.read(f);
+            ImageIO.write(src, formatName, new File(result));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
         }
     }
 }
