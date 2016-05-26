@@ -3,6 +3,8 @@ package com.mgtv.qxx.ttsdemo;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,6 +12,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
@@ -242,13 +245,18 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
                         }else{
                             if (true){
                                 Intent intent = new  Intent(Intent.ACTION_GET_CONTENT);
-                                intent.setType("text/plain");
+                                //intent.setType("file/*");
+                                intent.setType("text/*");
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                // 打开各种 activity
+                                // Intent intent = new  Intent(Intent.ACTION_PICK_ACTIVITY);
                                 /*
                                 // 其作用与 startActivityForResult(intent,ACTIVITY_GET_CONTENT); 一致
                                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                                 startActivityForResult(Intent.createChooser(intent,
                                         TtsDemoActivity.this.getResources().getString(R.string.text_view_save_prompt)), ACTIVITY_GET_CONTENT);
                                 */
+
                                 startActivityForResult(intent,ACTIVITY_GET_CONTENT);
 
                             }else {
@@ -359,16 +367,20 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
                     String path = uri.getPath();
                     fileType = path.substring(path.lastIndexOf(".")+1,path.length());
                 }
-                Log.e("onActivityResult",fileType);
+                //  Log.e("onActivityResult","ACTIVITY_GET_CONTENT get file's type：" + fileType);
                 if(fileType.startsWith("image"))//判断用户选择的是否为图片
                 {
                     //根据返回的uri获取图片路径
                     Cursor cursor = resolver.query(uri,  new String[]{MediaStore.Images.Media.DATA}, null, null, null);
                     cursor.moveToFirst();
                     String  path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-
                     //do  anything you want
-                }
+                }else if(fileType.startsWith("text")){
+                    // sSelectedDir = uri.getLastPathSegment(); //7b3:00wenjian.txt
+                    // String string = uri.getPath();
+                    sSelectedDir = getImageAbsolutePath(this,uri);
+                    ((EditText)findViewById(R.id.editTextShowDirectory)).setText(sSelectedDir);
+            }
             }else if (resultCode == RESULT_CANCELED){
                 Log.d("ACTIVITY_GET_CONTENT","取消");
             }
@@ -623,6 +635,116 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
     public void finish(){
         super.finish();
         googleSpeech.finish();
+    }
+
+    /**
+     * 根据Uri获取图片绝对路径，解决Android4.4以上版本Uri转换
+     * @param context
+     * @param imageUri
+     * @author yaoxing
+     * @date 2014-10-12
+     */
+
+    public static String getImageAbsolutePath(Activity context, Uri imageUri) {
+        if (context == null || imageUri == null)
+            return null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(context, imageUri)) {
+            Log.e("getRealUrl","isDocumentUri");
+            if (isExternalStorageDocument(imageUri)) {
+                Log.e("getRealUrl","isExternalStorageDocument");
+                String docId = DocumentsContract.getDocumentId(imageUri);
+                String[] split = docId.split(":");
+                String type = split[0];
+                if ("primary".equalsIgnoreCase(type)) {
+                    return Environment.getExternalStorageDirectory() + "/" + split[1];
+                }
+            } else if (isDownloadsDocument(imageUri)) {
+                Log.e("getRealUrl","isDownloadsDocument");
+                String id = DocumentsContract.getDocumentId(imageUri);
+                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
+                return getDataColumn(context, contentUri, null, null);
+            } else if (isMediaDocument(imageUri)) {
+                Log.e("getRealUrl","isMediaDocument");
+                String docId = DocumentsContract.getDocumentId(imageUri);
+                String[] split = docId.split(":");
+                String type = split[0];
+                Uri contentUri = null;
+                if ("image".equals(type)) {
+                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                } else if ("video".equals(type)) {
+                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                } else if ("audio".equals(type)) {
+                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                }
+                String selection = MediaStore.Images.Media._ID + "=?";
+                String[] selectionArgs = new String[] { split[1] };
+                return getDataColumn(context, contentUri, selection, selectionArgs);
+            }
+            Log.e("getRealUrl","not recognized");
+            return imageUri.getPath();
+        } // MediaStore (and general)
+        else if ("content".equalsIgnoreCase(imageUri.getScheme())) {
+            Log.e("getRealUrl","content");
+            // Return the remote address
+            if (isGooglePhotosUri(imageUri))
+                return imageUri.getLastPathSegment();
+            return getDataColumn(context, imageUri, null, null);
+        }
+        // File
+        else if ("file".equalsIgnoreCase(imageUri.getScheme())) {
+            Log.e("getRealUrl","file");
+            return imageUri.getPath();
+        }
+        return null;
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is ExternalStorageProvider.
+     */
+    public static boolean isExternalStorageDocument(Uri uri) {
+        return "com.android.externalstorage.documents".equals(uri.getAuthority());
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is DownloadsProvider.
+     */
+    public static boolean isDownloadsDocument(Uri uri) {
+        return "com.android.providers.downloads.documents".equals(uri.getAuthority());
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is MediaProvider.
+     */
+    public static boolean isMediaDocument(Uri uri) {
+        return "com.android.providers.media.documents".equals(uri.getAuthority());
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is Google Photos.
+     */
+    public static boolean isGooglePhotosUri(Uri uri) {
+        return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+    }
+
+    public static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
+        Cursor cursor = null;
+        String column = MediaStore.Images.Media.DATA;
+        String[] projection = { column };
+        try {
+            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                int index = cursor.getColumnIndexOrThrow(column);
+                return cursor.getString(index);
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return null;
     }
 }
 
