@@ -13,7 +13,6 @@
     <string name="text_view_save_prompt">选择目录保存声音</string>
     <string name="text_view_speak">文字转换语音</string>
     <string name="bt_save_setting">保存</string>
-    <string name="button_show_file">文件</string>
     <string name="encoding_prompt">选择打开文件的编码方式</string>
     <string name="et_speak_pitch_value">0.8</string>
     <string name="et_speak_rate_value">0.9</string>
@@ -43,4 +42,5 @@
     <string name="ocr_et_select_picture">/sdcard2/DCIM/Camera/1.JPG</string>
     <string name="app_camera2_name">相机</string>
     <string name="ocr_tv_recognition_result">識別結果</string>
+    <string name="button_select_file">文件</string>
 </resources>

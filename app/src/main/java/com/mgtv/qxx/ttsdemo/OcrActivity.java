@@ -20,8 +20,6 @@ import android.widget.Toast;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 
 public class OcrActivity extends AppCompatActivity {
 
@@ -162,6 +160,7 @@ public class OcrActivity extends AppCompatActivity {
      * @param result
      * @author:[shixing_11@sina.com]
      */
+    /*
     public static void convert(String source, String formatName, String result)
     {
         try
@@ -176,4 +175,5 @@ public class OcrActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+    */
 }

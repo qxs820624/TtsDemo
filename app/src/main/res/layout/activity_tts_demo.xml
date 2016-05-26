@@ -1,162 +1,198 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.mgtv.qxx.ttsdemo.TtsDemoActivity">
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/text_view_speak"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/textView" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textMultiLine"
-        android:ems="10"
-        android:hint="@string/edit_text_speak_hint"
-        android:id="@+id/editTextToSpeak"
-        android:layout_below="@+id/textView"
-        android:layout_marginTop="35dp"
-        android:layout_alignEnd="@+id/buttonSpeakOut"
-        android:layout_alignStart="@+id/editTextShowDirectory" />
-
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/button_speak_out"
-        android:id="@+id/buttonSpeakOut"
-        android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true" />
-
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/button_save"
-        android:id="@+id/buttonSaveWave"
-        android:layout_below="@+id/editTextShowDirectory"
-        android:layout_alignEnd="@+id/editTextShowDirectory" />
-
-    <CheckBox
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/check_box_speak_while_write"
-        android:id="@+id/checkBoxReadWrite"
-        android:layout_above="@+id/buttonSpeakOut"
-        android:layout_alignParentStart="@string/radio_group" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="@string/text_view_save_prompt"
-        android:id="@+id/textViewSelecDirectory"
-        android:layout_marginTop="15dp"
-        android:layout_below="@+id/buttonSpeakOut"
-        android:layout_alignParentStart="true" />
-
-
-    <RadioGroup
-        android:id="@+id/radioGroupLanguage"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_toStartOf="@+id/buttonSpeakOut"
-        android:layout_above="@+id/checkBoxReadWrite"
-        android:layout_alignEnd="@+id/editTextToSpeak"
-        android:layout_below="@+id/editTextToSpeak"
-        android:contentDescription="@string/radio_group_content">
-
-        <RadioButton
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/background_main"
+    tools:context="com.mgtv.qxx.ttsdemo.TtsDemoActivity"
+    tools:ignore="UselessParent"
+    android:weightSum="1">
+    <RelativeLayout
+        android:id="@+id/tts_text"
+        android:background="@drawable/background_editview"
+        android:layout_width="fill_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:layout_height="0dp"
+        android:layout_weight="0.2">
+        <!-- 朗读内容 -->
+        <TextView
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/radio_english"
-            android:id="@+id/radioButtonLangEn"
-            android:layout_above="@+id/checkBoxReadWrite"
+            android:text="@string/text_view_speak"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="@dimen/fab_margin"
+            android:textSize="9pt"/>
+        <!-- 选择文件按钮 -->
+        <Button
+            android:id="@+id/buttonSelectTextFile"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_select_file"
+            android:layout_below="@+id/textView"
             android:layout_alignParentStart="true"
-            android:singleLine="false" />
-
-        <RadioButton
+            android:layout_marginTop="5dp"
+            android:textSize="9pt"/>
+        <!-- 选择文件文本框 -->
+        <EditText
+            android:id="@+id/editTextToSpeak"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/radio_chinese"
-            android:id="@+id/radioButtonLangCn"
-            android:layout_above="@+id/checkBoxReadWrite"
-            android:layout_toStartOf="@+id/buttonSpeakOut"
-            android:enabled="true"
-            android:checked="true" />
+            android:inputType="textMultiLine"
+            android:ems="10"
+            android:hint="@string/edit_text_speak_hint"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@id/buttonSelectTextFile"
+            android:layout_alignBottom="@id/buttonSelectTextFile"
+            android:layout_toEndOf="@id/buttonSelectTextFile" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/tts_language"
+        android:background="@drawable/background_editview"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.4">
+        <!-- 选择语言组 -->
+        <RadioGroup
+            android:id="@+id/radioGroupLanguage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:orientation="horizontal"
+            android:contentDescription="@string/radio_group_content">
+            <!-- 选择英文 -->
+            <RadioButton
+                android:id="@+id/radioButtonLangEn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_english"
+                android:singleLine="false"
+                android:textSize="9pt"/>
+            <!-- 选择中文 -->
+            <RadioButton
+                android:id="@+id/radioButtonLangCn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_chinese"
+                android:enabled="true"
+                android:checked="true"
+                android:textSize="9pt"
+                android:layout_marginStart="30dp"/>
+        </RadioGroup>
+        <!-- 显示选择结果 -->
         <TextView
             android:id="@+id/textViewShowLanguage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/text_view_language_selected"
+            android:layout_below="@id/radioGroupLanguage"
             android:textSize="9pt"/>
-    </RadioGroup>
+        <!-- 勾选边读边写 -->
+        <CheckBox
+            android:id="@+id/checkBoxReadWrite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/check_box_speak_while_write"
+            android:layout_below="@+id/textViewShowLanguage"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="5dp"
+            android:textSize="9pt"/>
+        <!-- 朗读按键 -->
+        <Button
+            android:id="@+id/buttonSpeakOut"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_marginLeft="150dp"
+            android:layout_height="wrap_content"
+            android:text="@string/button_speak_out"
+            android:layout_alignParentEnd="true"
+            android:layout_toEndOf="@id/checkBoxReadWrite"
+            android:layout_alignBottom="@id/checkBoxReadWrite"/>
+    </RelativeLayout>
 
-    <Button
-        android:id="@+id/btnChoose"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:text="@string/choose_directory"
-        android:layout_below="@+id/textViewSelecDirectory"
-        android:layout_alignParentStart="true" />
+    <RelativeLayout
+        android:id="@+id/tts_save"
+        android:background="@drawable/background_editview"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.2">
+        <!-- 保存语音目录选择 -->
+        <TextView
+            android:id="@+id/textViewSelecDirectory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="@string/text_view_save_prompt"
+            android:layout_alignParentStart="true"
+            android:textSize="9pt"/>
+        <!-- 目录选择按键 -->
+        <Button
+            android:id="@+id/btnChoose"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="@string/choose_directory"
+            android:layout_below="@id/textViewSelecDirectory"
+            android:layout_alignParentStart="true" />
+        <!-- 保存语音目录选择路径展示 -->
+        <EditText
+            android:id="@+id/editTextShowDirectory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:ems="10"
+            android:text="@string/none"
+            android:layout_toEndOf="@id/btnChoose"
+            android:layout_alignBottom="@id/btnChoose"/>
+        <!-- 保存按键 -->
+        <Button
+            android:id="@+id/buttonSaveWave"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_save"
+            android:layout_alignParentEnd="true"
+            android:layout_toEndOf="@id/editTextShowDirectory"
+            android:layout_alignBottom="@id/btnChoose"
+            android:layout_alignTop="@id/btnChoose"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/floating_bar"
+        android:background="@drawable/background_editview"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.2">
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_ocr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ocr"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true" />
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textMultiLine"
-        android:ems="10"
-        android:id="@+id/editTextShowDirectory"
-        android:text="@string/none"
-        android:layout_alignBottom="@+id/btnChoose"
-        android:layout_alignEnd="@+id/buttonSpeakOut"
-        android:layout_toEndOf="@+id/btnChoose" />
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_camera2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/camera2"
+            android:layout_alignBottom="@+id/fab_ocr"
+            android:layout_centerHorizontal="true" />
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/buttonShowTextFile"
-        android:text="@string/button_show_file"
-        android:layout_above="@+id/radioGroupLanguage"
-        android:layout_toStartOf="@+id/editTextToSpeak" />
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/voice_search"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_ocr"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ocr"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_camera2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="@dimen/fab_camera_margin"
-        android:src="@drawable/camera2"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true" />
-</RelativeLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/voice_search"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true" />
+    </RelativeLayout>
+</LinearLayout>

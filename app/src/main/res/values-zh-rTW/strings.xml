@@ -13,7 +13,6 @@
     <string name="text_view_save_prompt">選擇保存聲音的目錄</string>
     <string name="text_view_speak">文字轉換語音</string>
     <string name="bt_save_setting">保存</string>
-    <string name="button_show_file">文件 </string>
     <string name="encoding_prompt">選擇打開文件的編碼方式</string>
     <string name="et_speak_pitch_value">0.9</string>
     <string name="et_speak_rate_value">0.9</string>
@@ -43,4 +42,5 @@
     <string name="dummy_content">樣例</string>
     <string name="tv_set_pitch">設置朗讀音高</string>
     <string name="ocr_tv_recognition_result">識別結果</string>
+    <string name="button_select_file">文件</string>
 </resources>

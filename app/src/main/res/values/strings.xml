@@ -14,7 +14,7 @@
     <string name="text_view_language_selected">Selected：中文</string>
     <string name="text_view_speak">TEXT TO SPEAK</string>
     <string name="edit_text_speak_hint">TEXT TO SPEAK</string>
-    <string name="button_show_file">Open File</string>
+    <string name="button_select_file">Select File</string>
 
     <!--  tts  -->
     <string name="tv_set_pitch">Set Speech Pitch</string>
