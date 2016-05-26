@@ -57,7 +57,7 @@
         android:background="@drawable/background_editview"
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.4">
+        android:layout_weight="0.17">
         <!-- 选择语言组 -->
         <RadioGroup
             android:id="@+id/radioGroupLanguage"
@@ -109,6 +109,7 @@
             style="?android:attr/buttonStyleSmall"
             android:layout_marginLeft="150dp"
             android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
             android:text="@string/button_speak_out"
             android:layout_alignParentEnd="true"
             android:layout_toEndOf="@id/checkBoxReadWrite"
@@ -159,6 +160,13 @@
             android:layout_toEndOf="@id/editTextShowDirectory"
             android:layout_alignBottom="@id/btnChoose"
             android:layout_alignTop="@id/btnChoose"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/nop"
+        android:background="@drawable/background_editview"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.2">
     </RelativeLayout>
     <RelativeLayout
         android:id="@+id/floating_bar"

@@ -36,7 +36,7 @@ public class TxtReader extends Activity implements
 
     private static final String LOG_TAG = "TxtReader";
     private static final int BUF_SIZE = 1024 * 2;
-    private static final int BUF_SHOW = 10;
+    private static int BUF_SHOW = 10;
 
     private static final int ARROW_UP = 1;
     private static final int ARROW_DOWN = 2;
@@ -147,34 +147,13 @@ public class TxtReader extends Activity implements
             ENCODING = DEFAULT_ENCODING;
         }
 
-        /*
-        TtsDemoActivity.SendTts st = (TtsDemoActivity.SendTts)extras.get("TTS_OBJ");
-
-        if (st!=null){
-            // fileTts = st.getTts();
-            isInited = true;
-            filename    = st.getFilename();
-            language    = st.getLanguage();
-            speechPitch = st.getSpeechPitch();
-            speechRate  = st.getSpeechRate();
-
-        }else {
-            Toast.makeText(this,"传入参数错误", Toast.LENGTH_SHORT).show();
-            this.finish();
-        }
-
-        if (!isInited || fileTts == null){
-            Log.e(LOG_TAG,"onCreate init TextToSpeech");
-            Toast.makeText(this,"Tts错误", Toast.LENGTH_SHORT).show();
-            this.finish();
-        }
-
-        */
         Log.i("获取到的name值为",filename);
 
         if (!isInited || fileTts == null){
-            Log.e(LOG_TAG,"onCreate init TextToSpeech");
-            fileTts = new TextToSpeech(this,this);
+            Log.e(LOG_TAG,"TextToSpeech 初始化失败");
+            Toast.makeText(this,"TextToSpeech 初始化失败",Toast.LENGTH_SHORT).show();
+            this.finish();
+            // fileTts = new TextToSpeech(this,this);
         }
 
         mUri = getIntent().getData();
@@ -204,14 +183,14 @@ public class TxtReader extends Activity implements
         BufferedReader inbr = null;
         // 高效缓存
         BufferedInputStream bis = null;
-        if (true){
-            bis = new BufferedInputStream(new FileInputStream(new File(uri.getPath())));
-            mIsReader = new InputStreamReader(bis, ENCODING);
-            inbr = new BufferedReader(mIsReader,BUF_SIZE);
-        }else {
-            mIsReader = new InputStreamReader(new FileInputStream(uri.getPath()), ENCODING);
-            inbr = new BufferedReader(mIsReader,BUF_SIZE);
-        }
+        FileInputStream fis = new FileInputStream(new File(uri.getPath()));
+        // 设置 BUF_SHOW 的值
+        BUF_SHOW = fis.available()/BUF_SIZE;
+        Log.e(LOG_TAG, String.valueOf(BUF_SHOW));
+        bis = new BufferedInputStream(fis);
+        mIsReader = new InputStreamReader(bis, ENCODING);
+        inbr = new BufferedReader(mIsReader,BUF_SIZE);
+
 
         mStringBuilder = new StringBuilder();
         int initBufSize = BUF_SIZE * (BUF_SHOW - 1);

@@ -261,7 +261,7 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
                     }
                 });
 
-        findViewById(R.id.buttonShowTextFile).setOnClickListener(new View.OnClickListener(){
+        findViewById(R.id.buttonSelectTextFile).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 if (mDialog.bInitInstance){
