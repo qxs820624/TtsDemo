@@ -49,7 +49,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
-public class TtsDemoActivity extends Activity implements DirectoryChooserFragment.OnFragmentInteractionListener {
+public class TtsVoiceOcrActivity extends Activity implements DirectoryChooserFragment.OnFragmentInteractionListener {
     private  static final String DEFAULT_ENCODING = "UTF-8";
 
     private GoogleSpeech googleSpeech;
@@ -85,12 +85,15 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tts_demo);
+        setContentView(R.layout.activity_main);
         //
         btnSpeak = (Button) findViewById(R.id.buttonSpeakOut);
         btnSave = (Button) findViewById(R.id.buttonSaveWave);
         etTextToSpeech = (EditText) findViewById(R.id.editTextToSpeak);
         checkBoxRw = (CheckBox) findViewById(R.id.checkBoxReadWrite);
+        mDirectoryTextView = (EditText) findViewById(R.id.editTextShowDirectory);
+        mFilePathTextView = (TextView) findViewById(R.id.editTextToSpeak);
+
 
         // 获取SD卡路径
         innerSdCardPath = getInnerSDCardPath();
@@ -138,7 +141,7 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
             activities = pm.queryIntentActivities( new Intent(RecognizerIntent.ACTION_WEB_SEARCH), 0); // 网络识别程序
             if (activities.size() == 0){
                 // fab.setEnabled(false);
-                Toast.makeText(TtsDemoActivity.this,"未检测到语音识别设备",Toast.LENGTH_SHORT).show();
+                Toast.makeText(TtsVoiceOcrActivity.this,"未检测到语音识别设备",Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -207,13 +210,13 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
                         //获取变更后的选中项的ID
                         int radioButtonId = arg0.getCheckedRadioButtonId();
                         //根据ID获取RadioButton的实例
-                        RadioButton rb = (RadioButton)TtsDemoActivity.this.findViewById(radioButtonId);
+                        RadioButton rb = (RadioButton)TtsVoiceOcrActivity.this.findViewById(radioButtonId);
                         //更新文本内容，以符合选中项
-                        TtsDemoActivity.this.tvShowLang.setText("您的语言是：" + rb.getText());
-                        TtsDemoActivity.this.sSelectedLanguage = rb.getText().toString();
+                        TtsVoiceOcrActivity.this.tvShowLang.setText("您的语言是：" + rb.getText());
+                        TtsVoiceOcrActivity.this.sSelectedLanguage = rb.getText().toString();
                         int result = -1;
                         // You can change language to speak by using setLanguage() function. Lot of languages are supported like Canada, French, Chinese, Germany etc.,
-                        if (TtsDemoActivity.this.sSelectedLanguage.equals("English") || TtsDemoActivity.this.sSelectedLanguage.equals("英语")){
+                        if (TtsVoiceOcrActivity.this.sSelectedLanguage.equals("English") || TtsVoiceOcrActivity.this.sSelectedLanguage.equals("英语")){
                             result = googleSpeech.setTtsLanguage(Locale.US); // English language
                         }else{
                             result = googleSpeech.setTtsLanguage(Locale.CHINESE); // Chinese language
@@ -226,7 +229,7 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
                             Log.d("TTS", "set Language success");
                         }else{
                             Properties prop = ttsSetting.loadConfig();
-                            prop.put("Language",TtsDemoActivity.this.sSelectedLanguage);
+                            prop.put("Language",TtsVoiceOcrActivity.this.sSelectedLanguage);
                             ttsSetting.saveConfig(prop);
                         }
                 }
@@ -236,49 +239,29 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
                 .newDirectoryName(sSelectedFile.substring(0,sSelectedFile.lastIndexOf("/")))
                 .build();
 
-        findViewById(R.id.btnChoose)
+        findViewById(R.id.buttonSelectTextFile)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (mDialog.bInitInstance){
-                            mDialog.SetFileFlag(false);
-                        }else{
-                            if (true){
-                                Intent intent = new  Intent(Intent.ACTION_GET_CONTENT);
-                                //intent.setType("file/*");
-                                intent.setType("text/*");
-                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                // 打开各种 activity
-                                // Intent intent = new  Intent(Intent.ACTION_PICK_ACTIVITY);
-                                /*
-                                // 其作用与 startActivityForResult(intent,ACTIVITY_GET_CONTENT); 一致
-                                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                                startActivityForResult(Intent.createChooser(intent,
-                                        TtsDemoActivity.this.getResources().getString(R.string.text_view_save_prompt)), ACTIVITY_GET_CONTENT);
-                                */
+                        // 打开各种 activity
+                        // Intent intent = new  Intent(Intent.ACTION_PICK_ACTIVITY);
+                        Intent intent = new  Intent(Intent.ACTION_GET_CONTENT);
+                        intent.setType("text/*"); //intent.setType("file/*");
+                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                                startActivityForResult(intent,ACTIVITY_GET_CONTENT);
-
-                            }else {
-                                Log.e("btnChoose", "not Init Instance");
-                                mDialog = DirectoryChooserFragment.newInstance(config, false);
-                                mDirectoryTextView = (TextView) findViewById(R.id.editTextShowDirectory);
-                                mDialog.show(getFragmentManager(), null);
-                            }
-                        }
+                        startActivityForResult(intent,ACTIVITY_GET_CONTENT);
                     }
                 });
 
-        findViewById(R.id.buttonSelectTextFile).setOnClickListener(new View.OnClickListener(){
+        findViewById(R.id.btnChoose).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 if (mDialog.bInitInstance){
-                    mDialog.SetFileFlag(true);
+                    mDialog.SetFileFlag(false);
                 }
                 else{
-                    Log.e("buttonShowTextFile","not Init Instance");
-                    mDialog = DirectoryChooserFragment.newInstance(config,true);
-                    mFilePathTextView = (TextView) findViewById(R.id.editTextToSpeak);
+                    Log.e("btnChoose","Start Init Instance");
+                    mDialog = DirectoryChooserFragment.newInstance(config,false);
                     mDialog.show(getFragmentManager(), null);
                 }
             }
@@ -336,8 +319,10 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
                 sSelectedFile = path;
                 bReadFile = true;
             }else {
-                mDirectoryTextView.setText(path);
-                sSelectedDir = path;
+                if (path!= null){
+                    mDirectoryTextView.setText(path);
+                    sSelectedDir = path;
+                }
                 bReadFile = false;
             }
         }else {
@@ -378,9 +363,9 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
                 }else if(fileType.startsWith("text")){
                     // sSelectedDir = uri.getLastPathSegment(); //7b3:00wenjian.txt
                     // String string = uri.getPath();
-                    sSelectedDir = getImageAbsolutePath(this,uri);
-                    ((EditText)findViewById(R.id.editTextShowDirectory)).setText(sSelectedDir);
-            }
+                    sSelectedFile = translateAbsolutePath(getAbsolutePath(this,uri));
+                    mFilePathTextView.setText(sSelectedFile);
+                }
             }else if (resultCode == RESULT_CANCELED){
                 Log.d("ACTIVITY_GET_CONTENT","取消");
             }
@@ -569,7 +554,7 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
          switch (itemId) {
              case R.id.c11_setting: // do something here
                  Log.i("MenuTest:", "ItemSelected: setting");
-                 Intent intent = new Intent(TtsDemoActivity.this, SetTts.class);
+                 Intent intent = new Intent(TtsVoiceOcrActivity.this, SetTts.class);
                  Bundle bd = new Bundle();
                  bd.putString("PropertyFile",ttsSettingFile);
                  intent.putExtras(bd);
@@ -638,14 +623,14 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
     }
 
     /**
-     * 根据Uri获取图片绝对路径，解决Android4.4以上版本Uri转换
+     * 根据Uri获取文件绝对路径，解决Android4.4以上版本Uri转换
      * @param context
      * @param imageUri
      * @author yaoxing
      * @date 2014-10-12
      */
 
-    public static String getImageAbsolutePath(Activity context, Uri imageUri) {
+    public static String getAbsolutePath(Activity context, Uri imageUri) {
         if (context == null || imageUri == null)
             return null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(context, imageUri)) {
@@ -743,6 +728,15 @@ public class TtsDemoActivity extends Activity implements DirectoryChooserFragmen
         } finally {
             if (cursor != null)
                 cursor.close();
+        }
+        return null;
+    }
+
+    public String translateAbsolutePath(String docPath){
+        if (docPath.startsWith("/document/7BC3-141A:")){
+            return docPath.replace("/document/7BC3-141A:","/sdcard2/");
+        }else if (docPath.startsWith("/document/9643-0F85:")){
+            return docPath.replace("/document/9643-0F85:","/sdcard/");
         }
         return null;
     }

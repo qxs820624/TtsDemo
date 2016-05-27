@@ -580,7 +580,8 @@ public class DirectoryChooserFragment extends DialogFragment {
                     if (bGetFile){
                         f.onSelectDirectory(mSelectedFile.toString());
                     }else{
-                        f.onSelectDirectory(mSelectedDir.getAbsolutePath());
+                        // Log.e("returnSelectedFolder",mSelectedDir.toString());
+                        f.onSelectDirectory(mSelectedDir.toString());
                     }
                 }
             });
