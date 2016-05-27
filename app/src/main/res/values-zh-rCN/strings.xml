@@ -39,8 +39,10 @@
     <string name="intro_message"><![CDATA[               这是专业相机的示例。从源码分析怎么使用相机的预览和拍照          ]]></string>
     <string name="ocr_btn_recognition">识别</string>
     <string name="ocr_tv_select_picture">请选择一张图片</string>
-    <string name="ocr_et_select_picture">/sdcard2/DCIM/Camera/1.JPG</string>
+    <string name="ocr_et_select_picture">图片路径</string>
     <string name="app_camera2_name">相机</string>
-    <string name="ocr_tv_recognition_result">識別結果</string>
+    <string name="ocr_tv_recognition_result">识别结果</string>
     <string name="button_select_file">文件</string>
+    <string name="ocr_init_faile_prompt">初始化失败</string>
+    <string name="button_select_picture">...</string>
 </resources>

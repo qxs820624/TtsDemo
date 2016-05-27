@@ -36,11 +36,13 @@
     <string name="dummy_button">範例</string>
     <string name="intro_message"><![CDATA[               这是專業相機的樣例。從源碼分析怎麼使用相機的預覽和拍照          ]]></string>
     <string name="ocr_btn_recognition">識別</string>
-    <string name="ocr_et_select_picture">/sdcard2/DCIM/Camera/1.JPG</string>
     <string name="ocr_tv_select_picture">請選擇一張圖片</string>
     <string name="app_camera2_name">相機</string>
     <string name="dummy_content">樣例</string>
     <string name="tv_set_pitch">設置朗讀音高</string>
     <string name="ocr_tv_recognition_result">識別結果</string>
     <string name="button_select_file">文件</string>
+    <string name="ocr_et_select_picture">圖片路徑</string>
+    <string name="ocr_init_faile_prompt">初始化失敗</string>
+    <string name="button_select_picture">...</string>
 </resources>

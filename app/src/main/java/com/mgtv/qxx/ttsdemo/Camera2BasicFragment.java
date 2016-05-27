@@ -49,6 +49,7 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
@@ -64,9 +65,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -239,6 +243,7 @@ public class Camera2BasicFragment extends Fragment
      * This is the output file for our picture.
      */
     private File mFile;
+    private String mExtenSd;
 
     /**
      * This a callback object for the {@link ImageReader}. "onImageAvailable" will be called when a
@@ -428,7 +433,7 @@ public class Camera2BasicFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_camera2_basic, container, false);
+        return inflater.inflate(R.layout.camera2_basic, container, false);
     }
 
     @Override
@@ -444,7 +449,59 @@ public class Camera2BasicFragment extends Fragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mFile = new File(getActivity().getExternalFilesDir(null), "pic.jpg");
+        mExtenSd = getExternelSDCardPath();
+        mFile = new File(mExtenSd + "/" + Environment.DIRECTORY_PICTURES, "/pic.jpg");
+    }
+
+    public static String getExternelSDCardPath() {
+        String cmd = "cat /proc/mounts";
+        Runtime run = Runtime.getRuntime();// 返回与当前 Java 应用程序相关的运行时对象
+        BufferedInputStream in=null;
+        BufferedReader inBr=null;
+        try {
+            Process p = run.exec(cmd);// 启动另一个进程来执行命令
+            in = new BufferedInputStream(p.getInputStream());
+            inBr = new BufferedReader(new InputStreamReader(in));
+
+
+            String lineStr;
+            while ((lineStr = inBr.readLine()) != null) {
+                // 获得命令执行后在控制台的输出信息
+                Log.e("getSDCardPath", lineStr);
+                if (lineStr.contains("sdcard2")  && lineStr.contains(".android_secure")) {
+                    String[] strArray = lineStr.split(" ");
+                    if (strArray != null && strArray.length >= 5) {
+                        String result = strArray[1].replace("/.android_secure",
+                                "");
+                        return result;
+                    }
+                }
+                // 检查命令是否执行失败。
+                if (p.waitFor() != 0 && p.exitValue() == 1) {
+                    // p.exitValue()==0表示正常结束，1：非正常结束
+                    Log.e("getSDCardPath", "命令执行失败!");
+                }
+            }
+        } catch (Exception e) {
+            Log.e("getSDCardPath", e.toString());
+            //return Environment.getExternalStorageDirectory().getPath();
+        }finally{
+            try {
+                if(in!=null){
+                    in.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                if(inBr!=null){
+                    inBr.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return Environment.getExternalStorageDirectory().getPath();
     }
 
     @Override

@@ -129,7 +129,7 @@ public class TxtReader extends Activity implements
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.text_show_scroll_be_read);
+        setContentView(R.layout.show_scroll);
         //新页面接收数据
 
         // 采用budle的方式

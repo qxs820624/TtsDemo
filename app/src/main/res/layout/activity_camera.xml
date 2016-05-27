@@ -27,7 +27,7 @@
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
 
-        <include layout="@layout/fragment_camera2_basic"/>
+        <include layout="@layout/camera2_basic"/>
         <!--LinearLayout
             android:id="@+id/fullscreen_content_controls"
             style="?metaButtonBarStyle"

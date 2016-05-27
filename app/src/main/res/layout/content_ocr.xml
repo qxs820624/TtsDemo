@@ -1,63 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.mgtv.qxx.ttsdemo.OcrActivity"
-    tools:showIn="@layout/activity_ocr">
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/background_main"
+    tools:context=".TtsVoiceOcrActivity">
 
-    <TextView
-        android:id="@+id/tv_select_picture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/ocr_tv_select_picture"
-        android:layout_marginTop="34dp"
-        android:layout_alignParentStart="true" />
-
-    <EditText
-        android:id="@+id/et_select_picture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="25dp"
-        android:textColor="#aaa"
-        android:hint="@string/ocr_et_select_picture"
-        android:layout_below="@id/tv_select_picture"/>
-
-    <Button
-        android:id="@+id/btn_select_picture"
-        android:layout_width="30dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="5dp"
-        android:layout_toStartOf="@+id/et_select_picture"
-        android:text="..."
-        android:layout_marginTop="25dp"
-        android:layout_alignBottom="@+id/et_select_picture"/>
-
-
-    <Button
-        android:id="@+id/btn_recognition"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/btn_select_picture"
-        android:text="@string/ocr_btn_recognition"
-        android:layout_marginTop="15dp" />
-
-    <TextView
-        android:id="@+id/tv_recognition_result"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/btn_recognition"
-        android:hint="@string/ocr_tv_recognition_result"
-        android:layout_marginTop="15dp" />
+        android:layout_height="0dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_weight="0.1"
+        android:orientation="horizontal">
 
-</RelativeLayout>
+        <Button
+            android:id="@+id/btn_select_picture"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:text="@string/button_select_picture"
+            android:layout_weight="0.2"/>
+        <EditText
+            android:id="@+id/et_select_picture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#aaa"
+            android:hint="@string/ocr_et_select_picture"
+            android:layout_weight="0.8" />
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.3">
+        <ImageView
+            android:id="@+id/imgShow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_camera_blanket"
+            android:scaleType="fitXY"
+            android:contentDescription="@string/button_select_picture"
+            android:clickable="true"
+            android:layout_above="@+id/btn_recognition" />
+        <Button
+            android:id="@+id/btn_recognition"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ocr_btn_recognition"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.6">
+        <EditText
+            android:id="@+id/et_recognition_result"
+            android:layout_marginTop="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#CBF"/>
+    </RelativeLayout>
+</LinearLayout>

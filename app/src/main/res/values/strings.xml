@@ -49,8 +49,9 @@
 
     <!-- OCR 相关 -->
     <string name="ocr_tv_select_picture">Select the picture to do OCR</string>
-    <string name="ocr_et_select_picture">/sdcard2/DCIM/Camera/1.JPG</string>
+    <string name="ocr_et_select_picture">Slect Picture</string>
     <string name="ocr_btn_recognition">Recognition</string>
     <string name="ocr_tv_recognition_result">Show the result of OCR</string>
     <string name="ocr_init_faile_prompt">baseApi init Failed!</string>
+    <string name="button_select_picture">...</string>
 </resources>

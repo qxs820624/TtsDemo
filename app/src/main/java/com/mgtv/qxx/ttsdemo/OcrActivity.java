@@ -29,7 +29,8 @@ public class OcrActivity extends AppCompatActivity {
     private EditText etSelectPicture;
     private Button btnSelectPic;
 
-    private static final int ACTIVITY_GET_CONTENT = 10;
+    private static final String TESSERACT_ROOT = "/sdcard2/tesseract/";
+    private static final int ACTIVITY_GET_IMAGE = 10;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,34 +48,20 @@ public class OcrActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        /*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-        */
-
         btnSelectPic = (Button) findViewById(R.id.btn_select_picture);
 
-        Button btRecognition=new Button(getBaseContext());
-        btRecognition=(Button)findViewById(R.id.btn_recognition);
-
         textRecognitionResult=new TextView(getBaseContext());
-        textRecognitionResult=(TextView)findViewById(R.id.tv_recognition_result);
+        textRecognitionResult=(TextView)findViewById(R.id.et_recognition_result);
 
         baseApi=new TessBaseAPI();
-        boolean bInitBaseApi = baseApi.init("/sdcard2/tesseract/", "eng");
+        boolean bInitBaseApi = baseApi.init(TESSERACT_ROOT, "eng");
         if (!bInitBaseApi)  {
             Log.e("OCRActivity", "baseApi init Failed!");
             Toast.makeText(this, this.getResources().getString(R.string.ocr_init_faile_prompt), Toast.LENGTH_LONG).show();
             finish();
         }
 
-        btRecognition.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.btn_recognition).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View sourse) {
                     //设置要ocr的图片bitmap
@@ -96,8 +83,8 @@ public class OcrActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new  Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/bmp");
-                startActivityForResult(intent,ACTIVITY_GET_CONTENT);
+                intent.setType("image/*");
+                startActivityForResult(intent,ACTIVITY_GET_IMAGE);
             }
         });
     }
@@ -124,7 +111,7 @@ public class OcrActivity extends AppCompatActivity {
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        if (ACTIVITY_GET_CONTENT == requestCode){
+        if (ACTIVITY_GET_IMAGE == requestCode){
             // Log.e("onActivityResult Code",String.valueOf(resultCode));
             // Log.e("onActivityResult data",data.getData().toString());
             if(resultCode  == RESULT_OK){
