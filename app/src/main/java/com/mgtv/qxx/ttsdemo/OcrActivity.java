@@ -9,17 +9,18 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.io.File;
+import java.io.IOException;
 
 public class OcrActivity extends AppCompatActivity {
 
@@ -28,6 +29,7 @@ public class OcrActivity extends AppCompatActivity {
     private String picFile;
     private EditText etSelectPicture;
     private Button btnSelectPic;
+    private ImageView imgShow=null;
 
     private static final String TESSERACT_ROOT = "/sdcard2/tesseract/";
     private static final int ACTIVITY_GET_IMAGE = 10;
@@ -35,6 +37,7 @@ public class OcrActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ocr);
+//        Log.e("OcrActivity", "OcrActivity");
 
         // 采用budle的方式
         Bundle extras  = this.getIntent().getExtras();
@@ -45,8 +48,8 @@ public class OcrActivity extends AppCompatActivity {
         etSelectPicture = (EditText)findViewById(R.id.et_select_picture);
         etSelectPicture.setText(picFile);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        imgShow=(ImageView) findViewById(R.id.imgShow);
+        imgShow.setImageBitmap(getDiskBitmap(picFile));
 
         btnSelectPic = (Button) findViewById(R.id.btn_select_picture);
 
@@ -65,6 +68,7 @@ public class OcrActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View sourse) {
                     //设置要ocr的图片bitmap
+                    // Log.e("OCRActivity", "parse" + picFile);
                     Bitmap bm = getDiskBitmap(picFile);
                     if (bm != null){
                         baseApi.setImage(bm);
@@ -97,7 +101,10 @@ public class OcrActivity extends AppCompatActivity {
             File file = new File(pathString);
             if(file.exists())
             {
-                bitmap = BitmapFactory.decodeFile(pathString);
+                BitmapFactory.Options opts = new BitmapFactory.Options();
+                // 设置为ture只获取图片一半大小
+                opts.inSampleSize=1;
+                bitmap = BitmapFactory.decodeFile(pathString,opts);
             }else{
                 Toast.makeText(this,"file not exists",Toast.LENGTH_LONG).show();
             }
@@ -116,10 +123,19 @@ public class OcrActivity extends AppCompatActivity {
             // Log.e("onActivityResult data",data.getData().toString());
             if(resultCode  == RESULT_OK){
                 //得到文件的Uri
-                Uri uri = data.getData();
+                Uri uri = data.getData(); //获得图片的uri
+                //外界的程序访问ContentProvider所提供数据 可以通过ContentResolver接口
                 ContentResolver resolver = getContentResolver();
-                //ContentResolver对象的getType方法可返回形如content://的Uri的类型
-                //如果是一张图片，返回结果为image/jpeg或image/png等
+                try {
+                    Bitmap bm = MediaStore.Images.Media.getBitmap(resolver, uri);
+                    //显得到bitmap图片
+                    imgShow.setImageBitmap(bm);
+                }catch (IOException e) {
+                    Log.e("ACTIVITY_GET_IMAGE",e.toString());
+                }
+                // 这里开始的第二部分，获取图片的路径：
+                // ContentResolver对象的getType方法可返回形如content://的Uri的类型
+                // 如果是一张图片，返回结果为image/jpeg或image/png等
                 String fileType = resolver.getType(uri);
                 if (fileType == null || fileType.isEmpty()){
                     String path = uri.getPath();

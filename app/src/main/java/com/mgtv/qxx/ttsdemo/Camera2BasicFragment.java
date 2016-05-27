@@ -65,12 +65,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,6 +86,8 @@ public class Camera2BasicFragment extends Fragment
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     private static final int REQUEST_CAMERA_PERMISSION = 1;
     private static final String FRAGMENT_DIALOG = "dialog";
+    private static final String LOG_TAG = "Camera2BasicFragment";
+    private static final int  CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 20;
 
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
@@ -254,6 +253,7 @@ public class Camera2BasicFragment extends Fragment
 
         @Override
         public void onImageAvailable(ImageReader reader) {
+            Log.e(LOG_TAG,"OnImageAvailableListener");
             mBackgroundHandler.post(new ImageSaver(reader.acquireNextImage(), mFile));
         }
 
@@ -299,9 +299,11 @@ public class Camera2BasicFragment extends Fragment
             = new CameraCaptureSession.CaptureCallback() {
 
         private void process(CaptureResult result) {
+            // Log.e(LOG_TAG,"CaptureCallback process");
             switch (mState) {
                 case STATE_PREVIEW: {
                     // We have nothing to do when the camera preview is working normally.
+                    // Log.e(LOG_TAG,"CaptureCallback process, STATE_PREVIEW");
                     break;
                 }
                 case STATE_WAITING_LOCK: {
@@ -348,6 +350,7 @@ public class Camera2BasicFragment extends Fragment
         public void onCaptureProgressed(@NonNull CameraCaptureSession session,
                                         @NonNull CaptureRequest request,
                                         @NonNull CaptureResult partialResult) {
+            Log.e(LOG_TAG,"onCaptureProgressed");
             process(partialResult);
         }
 
@@ -355,6 +358,7 @@ public class Camera2BasicFragment extends Fragment
         public void onCaptureCompleted(@NonNull CameraCaptureSession session,
                                        @NonNull CaptureRequest request,
                                        @NonNull TotalCaptureResult result) {
+            // Log.e(LOG_TAG,"onCaptureCompleted");
             process(result);
         }
 
@@ -433,7 +437,8 @@ public class Camera2BasicFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.camera2_basic, container, false);
+        // create Intent to take a picture and return control to the calling application
+         return inflater.inflate(R.layout.camera2_basic, container, false);
     }
 
     @Override
@@ -449,59 +454,8 @@ public class Camera2BasicFragment extends Fragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mExtenSd = getExternelSDCardPath();
+        mExtenSd = QxxExec.getExternalSDCardPath();
         mFile = new File(mExtenSd + "/" + Environment.DIRECTORY_PICTURES, "/pic.jpg");
-    }
-
-    public static String getExternelSDCardPath() {
-        String cmd = "cat /proc/mounts";
-        Runtime run = Runtime.getRuntime();// 返回与当前 Java 应用程序相关的运行时对象
-        BufferedInputStream in=null;
-        BufferedReader inBr=null;
-        try {
-            Process p = run.exec(cmd);// 启动另一个进程来执行命令
-            in = new BufferedInputStream(p.getInputStream());
-            inBr = new BufferedReader(new InputStreamReader(in));
-
-
-            String lineStr;
-            while ((lineStr = inBr.readLine()) != null) {
-                // 获得命令执行后在控制台的输出信息
-                Log.e("getSDCardPath", lineStr);
-                if (lineStr.contains("sdcard2")  && lineStr.contains(".android_secure")) {
-                    String[] strArray = lineStr.split(" ");
-                    if (strArray != null && strArray.length >= 5) {
-                        String result = strArray[1].replace("/.android_secure",
-                                "");
-                        return result;
-                    }
-                }
-                // 检查命令是否执行失败。
-                if (p.waitFor() != 0 && p.exitValue() == 1) {
-                    // p.exitValue()==0表示正常结束，1：非正常结束
-                    Log.e("getSDCardPath", "命令执行失败!");
-                }
-            }
-        } catch (Exception e) {
-            Log.e("getSDCardPath", e.toString());
-            //return Environment.getExternalStorageDirectory().getPath();
-        }finally{
-            try {
-                if(in!=null){
-                    in.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
-                if(inBr!=null){
-                    inBr.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return Environment.getExternalStorageDirectory().getPath();
     }
 
     @Override
@@ -862,6 +816,7 @@ public class Camera2BasicFragment extends Fragment
                     CameraMetadata.CONTROL_AF_TRIGGER_START);
             // Tell #mCaptureCallback to wait for the lock.
             mState = STATE_WAITING_LOCK;
+            Log.e(LOG_TAG,"lockFocus");
             mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
                     mBackgroundHandler);
         } catch (CameraAccessException e) {
@@ -1044,6 +999,7 @@ public class Camera2BasicFragment extends Fragment
             buffer.get(bytes);
             FileOutputStream output = null;
             try {
+                Log.e(LOG_TAG,buffer.toString());
                 output = new FileOutputStream(mFile);
                 output.write(bytes);
             } catch (IOException e) {

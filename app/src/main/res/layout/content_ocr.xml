@@ -20,14 +20,14 @@
             android:layout_width="30dp"
             android:layout_height="wrap_content"
             android:text="@string/button_select_picture"
-            android:layout_weight="0.2"/>
+            android:layout_weight="0.3"/>
         <EditText
             android:id="@+id/et_select_picture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="#aaa"
             android:hint="@string/ocr_et_select_picture"
-            android:layout_weight="0.8" />
+            android:layout_weight="0.7" />
     </LinearLayout>
     <RelativeLayout
         android:layout_width="match_parent"
@@ -60,6 +60,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="12sp"
-            android:textColor="#CBF"/>
+            android:textColor="#001"/>
     </RelativeLayout>
 </LinearLayout>
