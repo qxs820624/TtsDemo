@@ -139,8 +139,10 @@ public class OcrActivity extends AppCompatActivity {
                 String fileType = resolver.getType(uri);
                 if (fileType == null || fileType.isEmpty()){
                     String path = uri.getPath();
+                    Log.e("path",path);
                     fileType = path.substring(path.lastIndexOf(".")+1,path.length());
                 }
+                Log.e("fileType",fileType);
                 if(fileType.startsWith("image"))//判断用户选择的是否为图片
                 {
                     //根据返回的uri获取图片路径
@@ -148,6 +150,7 @@ public class OcrActivity extends AppCompatActivity {
                     cursor.moveToFirst();
                     String  path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
 
+                    Log.e("image path",path);
                     //do  anything you want
                     etSelectPicture.setText(path);
                 }

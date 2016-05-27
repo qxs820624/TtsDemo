@@ -236,7 +236,7 @@ public class TtsVoiceOcrActivity extends Activity implements DirectoryChooserFra
                 Snackbar.make(view, "进行相机专业模式，请确保照相机的权限", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 // startCamera2Activity();
-                startOcrActivity();
+                startCamera1Activity();
             }
         });
 
@@ -468,18 +468,10 @@ public class TtsVoiceOcrActivity extends Activity implements DirectoryChooserFra
                 googleSpeech.notifyReinstallDialog(); // 提示用户是否重装TTS引擎数据的对话框
             }
         } else if (REQ_OCR == requestCode) {
-            if (resultCode == RESULT_OK) {
-                Intent intent = new Intent(this, OcrActivity.class);
-                Bundle bundle=new Bundle();
-                bundle.putString("picture_path",pictureSavePath);
-                intent.putExtras(bundle);
-                startActivity(intent);
-
-            } else if (resultCode != RESULT_OK) {
-                Log.d("REQ_OCR", "onActivityResult: bail due to resultCode=" + resultCode);
-                return;
+            if (resultCode != RESULT_OK){
+                pictureSavePath = "";
             }
-
+            startOcrActivity();
         }
         // 语音识别后的回调，将识别的字串以Toast显示
         super.onActivityResult(requestCode, resultCode, data);
@@ -493,24 +485,40 @@ public class TtsVoiceOcrActivity extends Activity implements DirectoryChooserFra
     }
 
     private void startCamera2Activity() {
-        Intent intent = new Intent(this, CameraActivity.class);
-        startActivity(intent);
+        startCameraActivity(2);
     }
 
-    private void startOcrActivity() {
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        File path = new File(innerSdCardPath);
+    private void startCamera1Activity() {
+        startCameraActivity(1);
+    }
+
+    private void startCameraActivity(int cameraApiVersion) {
+        Intent intent;
+        if (cameraApiVersion == 1){
+            intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        }else{
+            intent = new Intent(this, CameraActivity.class);
+        }
+        File path = new File(externSdCardPath + "/DCIM/OCR/");
         if (!path.exists())
             path.mkdirs();
         String mStrFileName = getFormattedTime() + ".jpg";
-        pictureSavePath = externSdCardPath + "/DCIM/" + mStrFileName;
-        Log.e("REQ_OCR", pictureSavePath);
+        pictureSavePath = externSdCardPath + "/DCIM/OCR/" + mStrFileName;
+        // Log.e("REQ_OCR", pictureSavePath);
         File file = new File(pictureSavePath);
         Uri uri = Uri.fromFile(file);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         startActivityForResult(intent, REQ_OCR);
     }
 
+    private void startOcrActivity() {
+        // Log.e("REQ_OCR", pictureSavePath);
+        Intent intent = new Intent(this, OcrActivity.class);
+        Bundle bundle=new Bundle();
+        bundle.putString("picture_path",pictureSavePath);
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
     /**
      * 調用方法
      * 开始本地识别
