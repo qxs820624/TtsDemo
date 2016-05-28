@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -21,6 +24,9 @@ import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 
 public class OcrActivity extends AppCompatActivity {
 
@@ -30,9 +36,11 @@ public class OcrActivity extends AppCompatActivity {
     private EditText etSelectPicture;
     private Button btnSelectPic;
     private ImageView imgShow=null;
+    private String lang = "Chinese";
+    private String transLang = "";
 
     private static final String TESSERACT_ROOT = "/sdcard2/tesseract/";
-    private static final String DEFAULT_LANGUAGE = "eng";
+    private static final String ENGLISH_LANGUAGE = "eng";
     private static final String CHINESE_LANGUAGE = "chi_sim";
     private static final int ACTIVITY_GET_IMAGE = 10;
     @Override
@@ -46,6 +54,12 @@ public class OcrActivity extends AppCompatActivity {
 
         //接收name值
         picFile  = extras.getString("picture_path");
+        lang = extras.getString("ocr_language");
+        if (lang.equalsIgnoreCase("Chinese") || lang.equalsIgnoreCase("中文")){
+            transLang = CHINESE_LANGUAGE;
+        } else {
+            transLang = ENGLISH_LANGUAGE;
+        }
         // Log.e("OcrActivity",picFile);
         etSelectPicture = (EditText)findViewById(R.id.et_select_picture);
         etSelectPicture.setText(picFile);
@@ -60,7 +74,7 @@ public class OcrActivity extends AppCompatActivity {
 
         baseApi=new TessBaseAPI();
         // baseApi.init(TESSBASE_PATH, CHINESE_LANGUAGE+CHINESE_LANGUAGE); //多字库使用
-        boolean bInitBaseApi = baseApi.init(TESSERACT_ROOT, CHINESE_LANGUAGE);
+        boolean bInitBaseApi = baseApi.init(TESSERACT_ROOT, transLang);
         baseApi.setPageSegMode(TessBaseAPI.PSM_AUTO);
         if (!bInitBaseApi)  {
             Log.e("OCRActivity", "baseApi init Failed!");
@@ -73,7 +87,8 @@ public class OcrActivity extends AppCompatActivity {
                 public void onClick(View sourse) {
                     //设置要ocr的图片bitmap
                     // Log.e("OCRActivity", "parse" + picFile);
-                    Bitmap bm = getDiskBitmap(picFile);
+
+                    Bitmap bm = PreProcess(getDiskBitmap(picFile));
                     if (bm != null){
                         baseApi.setImage(bm);
                         //根据Init的语言，获得ocr后的字符串
@@ -97,6 +112,80 @@ public class OcrActivity extends AppCompatActivity {
         });
     }
 
+    public Bitmap PreProcess(Bitmap bmpFile) {
+        // Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        //在这里创建了一张bitmap
+        // mBitmap = BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_vd_mic_on);
+        //将这张bitmap设置为背景图片
+        //setBackgroundDrawable(new BitmapDrawable(mBitmap));
+        Bitmap newBmpFile;
+        int iBitmapWidth = bmpFile.getWidth();
+        int iBitmapHeight = bmpFile.getHeight();
+
+        int iArrayColorLengh = iBitmapWidth * iBitmapHeight;
+        try{
+
+            //创建一个临时文件
+            File file = new File("/sdcard2/tmp/tmp.txt");
+            file.getParentFile().mkdirs();
+
+            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+            FileChannel channel = randomAccessFile.getChannel();
+            MappedByteBuffer map = channel.map(FileChannel.MapMode.READ_WRITE, 0, iArrayColorLengh *4);
+
+            //将位图信息写进buffer
+            bmpFile.copyPixelsToBuffer(map);
+
+            //释放原位图占用的空间
+            bmpFile.recycle();
+            //创建一个新的位图
+            newBmpFile = Bitmap.createBitmap(iBitmapWidth, iBitmapHeight, Bitmap.Config.ARGB_8888);
+            map.position(0);
+            //从临时缓冲中拷贝位图信息
+            newBmpFile.copyPixelsFromBuffer(map);
+            channel.close();
+            randomAccessFile.close();
+            // -----------------=============================
+            int iArrayColor[]  = new int[iArrayColorLengh];
+            int count = 0;
+            for (int y = 0; y < iBitmapHeight; y++) {
+                for (int x = 0; x < iBitmapWidth; x++) {
+                    //获得Bitmap 图片中每一个点的color颜色值
+                    int color = newBmpFile.getPixel(x, y);
+                    //将颜色值存在一个数组中 方便后面修改
+                    iArrayColor[count] = color;
+                    //如果你想做的更细致的话 可以把颜色值的R G B 拿到做响应的处理 笔者在这里就不做更多解释
+                    int r = Color.red(color);
+                    int g = Color.green(color);
+                    int b = Color.blue(color);
+
+                    count++;
+
+                    //去掉边框
+                    if (x == 0 || y == 0 || x == iBitmapWidth - 1 || y == iBitmapHeight - 1)
+                    {
+                        newBmpFile.setPixel(x, y, Color.WHITE);
+                    }else {
+                        //如果点的颜色是背景干扰色，则变为白色
+                        if (color == Color.rgb(204, 204, 51) ||
+                                color == Color.rgb(153, 204, 51) ||
+                                color == Color.rgb(204, 255, 102) ||
+                                color == Color.rgb(204, 204, 204) ||
+                                color == Color.rgb(204, 255, 51))
+                        {
+                            newBmpFile.setPixel(x, y, Color.WHITE);
+                        }
+                    }
+                }
+            }
+        }
+        catch(Exception ex){
+            newBmpFile=null;
+        }
+        return newBmpFile;
+        // long startTime = System.currentTimeMillis();
+    }
+
     private Bitmap getDiskBitmap(String pathString)
     {
         Bitmap bitmap = null;
@@ -116,9 +205,9 @@ public class OcrActivity extends AppCompatActivity {
         } catch (Exception e)
         {
             // TODO: handle exception
+            Log.e("Ocr-getDiskBitmap",e.toString());
+            Toast.makeText(this,"OcrActivity getDiskBitmap" + e.toString(),Toast.LENGTH_LONG).show();
         }
-
-
         return bitmap;
     }
 

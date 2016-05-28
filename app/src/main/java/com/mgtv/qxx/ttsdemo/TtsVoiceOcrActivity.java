@@ -516,6 +516,7 @@ public class TtsVoiceOcrActivity extends Activity implements DirectoryChooserFra
         Intent intent = new Intent(this, OcrActivity.class);
         Bundle bundle=new Bundle();
         bundle.putString("picture_path",pictureSavePath);
+        bundle.putString("ocr_language",sSelectedLanguage);
         intent.putExtras(bundle);
         startActivity(intent);
     }
