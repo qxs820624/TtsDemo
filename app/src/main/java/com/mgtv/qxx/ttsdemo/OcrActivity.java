@@ -32,6 +32,8 @@ public class OcrActivity extends AppCompatActivity {
     private ImageView imgShow=null;
 
     private static final String TESSERACT_ROOT = "/sdcard2/tesseract/";
+    private static final String DEFAULT_LANGUAGE = "eng";
+    private static final String CHINESE_LANGUAGE = "chi_sim";
     private static final int ACTIVITY_GET_IMAGE = 10;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +59,12 @@ public class OcrActivity extends AppCompatActivity {
         textRecognitionResult=(TextView)findViewById(R.id.et_recognition_result);
 
         baseApi=new TessBaseAPI();
-        boolean bInitBaseApi = baseApi.init(TESSERACT_ROOT, "eng");
+        // baseApi.init(TESSBASE_PATH, CHINESE_LANGUAGE+CHINESE_LANGUAGE); //多字库使用
+        boolean bInitBaseApi = baseApi.init(TESSERACT_ROOT, CHINESE_LANGUAGE);
+        baseApi.setPageSegMode(TessBaseAPI.PSM_AUTO);
         if (!bInitBaseApi)  {
             Log.e("OCRActivity", "baseApi init Failed!");
-            Toast.makeText(this, this.getResources().getString(R.string.ocr_init_faile_prompt), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, this.getResources().getString(R.string.ocr_init_faile_prompt), Toast.LENGTH_SHORT).show();
             finish();
         }
 
@@ -105,6 +109,7 @@ public class OcrActivity extends AppCompatActivity {
                 // 设置为ture只获取图片一半大小
                 opts.inSampleSize=1;
                 bitmap = BitmapFactory.decodeFile(pathString,opts);
+                //Bitmap newbitmap = BitmapFactory.decodeResource(bitmap.getRowBytes(),R.drawable.ic_vd_mic_on); //createBitmap(bitmap.getWidth(), bitmap.getHeight(),null);
             }else{
                 Toast.makeText(this,"file not exists",Toast.LENGTH_LONG).show();
             }
