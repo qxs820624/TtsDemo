@@ -12,8 +12,8 @@ import java.util.regex.Pattern;
  */
 public class ParseStringEncoding {
     private static final String LOG_TAG = "ParseStringEncoding";
-    private static final String EnglishPattern = "[a-zA-Z!@#$%^&*()-+:;\"'|\\,./<>?\\[\\]\\x20]{1,}";
-    private static final String ChineseNumPattern = "[0-9\\u4e00-\\u9fa5。，：；“”【】！@￥……（）——《》？、·~_=]{1,}";
+    private static final String EnglishPattern = "[a-zA-Z0-9!@#$%^&*()-+:;\"'|\\,./<>?\\[\\]\\x20]{1,}";
+    private static final String ChineseNumPattern = "[\\u4e00-\\u9fa50-9。，：；“”【】！@￥……（）——《》？、·~_=]{1,}";
     public class EncodingString{
         public String txt;
         public Locale txtType;

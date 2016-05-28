@@ -174,22 +174,16 @@ public class QxxExec {
         if (context == null || imageUri == null)
             return null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(context, imageUri)) {
-            Log.e("getRealUrl","isDocumentUri");
+            // Log.e("getAbsolutePath","isDocumentUri");
             if (isExternalStorageDocument(imageUri)) {
-                Log.e("getRealUrl","isExternalStorageDocument");
-                String docId = DocumentsContract.getDocumentId(imageUri);
-                String[] split = docId.split(":");
-                String type = split[0];
-                if ("primary".equalsIgnoreCase(type)) {
-                    return Environment.getExternalStorageDirectory() + "/" + split[1];
-                }
+                return translateAbsolutePath(imageUri.getPath());
             } else if (isDownloadsDocument(imageUri)) {
-                Log.e("getRealUrl","isDownloadsDocument");
+                // Log.e("getAbsolutePath","isDownloadsDocument");
                 String id = DocumentsContract.getDocumentId(imageUri);
                 Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(id));
                 return getDataColumn(context, contentUri, null, null);
             } else if (isMediaDocument(imageUri)) {
-                Log.e("getRealUrl","isMediaDocument");
+                // Log.e("getAbsolutePath","isMediaDocument");
                 String docId = DocumentsContract.getDocumentId(imageUri);
                 String[] split = docId.split(":");
                 String type = split[0];
@@ -205,11 +199,11 @@ public class QxxExec {
                 String[] selectionArgs = new String[] { split[1] };
                 return getDataColumn(context, contentUri, selection, selectionArgs);
             }
-            Log.e("getRealUrl","not recognized");
-            return imageUri.getPath();
+            Log.e("getAbsolutePath","not recognized");
+            return translateAbsolutePath(imageUri.getPath());
         } // MediaStore (and general)
         else if ("content".equalsIgnoreCase(imageUri.getScheme())) {
-            Log.e("getRealUrl","content");
+            Log.e("getAbsolutePath","content");
             // Return the remote address
             if (isGooglePhotosUri(imageUri))
                 return imageUri.getLastPathSegment();
@@ -217,7 +211,7 @@ public class QxxExec {
         }
         // File
         else if ("file".equalsIgnoreCase(imageUri.getScheme())) {
-            Log.e("getRealUrl","file");
+            Log.e("getAbsolutePath","file");
             return imageUri.getPath();
         }
         return null;
@@ -278,7 +272,7 @@ public class QxxExec {
         }else if (docPath.startsWith("/document/9643-0F85:")){
             return docPath.replace("/document/9643-0F85:","/sdcard/");
         }
-        return null;
+        return docPath;
     }
 }
 

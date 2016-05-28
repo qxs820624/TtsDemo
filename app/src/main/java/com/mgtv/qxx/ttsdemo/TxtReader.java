@@ -137,23 +137,26 @@ public class TxtReader extends Activity implements
 
         //接收name值
         filename    = extras.getString("Filename");
+        Log.i(LOG_TAG,"获取到的 filename 值为:"+ filename);
         language    = extras.getString("Language");
+        Log.i(LOG_TAG,"获取到的 language 值为:"+ language);
         speechPitch = extras.getFloat("SpeechPitch");
+        Log.i(LOG_TAG,String.valueOf("获取到的 speechPitch 值为:"+ speechPitch));
         speechRate  = extras.getFloat("SpeechRate");
+        Log.i(LOG_TAG,String.valueOf("获取到的 speechRate 值为:"+ speechRate));
         speechLength = extras.getInt("SpeechLength");
+        Log.i(LOG_TAG,String.valueOf("获取到的 speechLength 值为:"+ speechLength));
 
         ENCODING = (String) extras.get("Encoding");
+        Log.i(LOG_TAG,"获取到的 filename 值为:"+ String.valueOf(ENCODING));
         if (ENCODING == null || ENCODING.isEmpty()){
             ENCODING = DEFAULT_ENCODING;
         }
-
-        Log.i("获取到的name值为",filename);
+        Log.i(LOG_TAG,"设置的 filename 值为:"+ String.valueOf(ENCODING));
 
         if (!isInited || fileTts == null){
-            Log.e(LOG_TAG,"TextToSpeech 初始化失败");
-            Toast.makeText(this,"TextToSpeech 初始化失败",Toast.LENGTH_SHORT).show();
-            this.finish();
-            // fileTts = new TextToSpeech(this,this);
+            Log.e(LOG_TAG,"TextToSpeech 尚未初始化");
+            fileTts = new TextToSpeech(this,this);
         }
 
         mUri = getIntent().getData();
@@ -428,6 +431,8 @@ public class TxtReader extends Activity implements
             mTextShow = (SwanTextView) findViewById(R.id.text_to_read);
             mTextShow.setOnPreDrawListener(this);
             new TextShowTask().execute(mUri);
+        }else {
+            Toast.makeText(this,"TextToSpeech 初始化失败",Toast.LENGTH_SHORT).show();
         }
     }
 }
