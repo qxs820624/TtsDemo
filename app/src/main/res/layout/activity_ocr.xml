@@ -6,55 +6,115 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/background_main"
-    tools:context=".OcrActivity">
-
+    tools:context=".OcrActivity"
+    android:weightSum="1">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:orientation="horizontal"
-        android:layout_marginTop="5dp">
+        android:layout_height="0dp"
+        android:layout_weight="0.25"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp">
 
-        <Button
-            android:id="@+id/btn_select_picture"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:text="@string/button_select_picture"/>
-        <EditText
-            android:id="@+id/et_select_picture"
-            android:layout_width="260dp"
-            android:layout_height="wrap_content"
-            android:textColor="#aaa"
-            android:hint="@string/ocr_et_select_picture"/>
-        <Button
-            android:id="@+id/btn_recognition"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:text="@string/ocr_btn_recognition"/>
+            <Button
+                android:id="@+id/btn_select_picture"
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                android:text="@string/button_select_picture"/>
+            <EditText
+                android:id="@+id/et_select_picture"
+                android:layout_width="255dp"
+                android:layout_height="45dp"
+                android:textColor="#aaa"
+                android:hint="@string/ocr_et_select_picture"/>
+            <Button
+                android:id="@+id/btn_recognition"
+                android:layout_width="45dp"
+                android:layout_height="wrap_content"
+                android:text="@string/ocr_btn_recognition"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:orientation="horizontal">
+            <CheckBox
+                android:id="@+id/ch_threshold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/threshold"
+                android:checked="true"
+                android:layout_marginStart="2dp"/>
+            <RadioGroup
+                android:id="@+id/radiogroup"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:orientation="horizontal"
+                android:layout_marginStart="20dp">
+                <RadioButton
+                    android:id="@+id/rb_en"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/radio_english" />
 
+                <RadioButton
+                    android:id="@+id/rb_ch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:checked="true"
+                    android:text="@string/radio_chinese" />
+            </RadioGroup>
+        </LinearLayout>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layoutDirection="locale">
+        android:layoutDirection="locale"
+        android:layout_weight="0.8">
         <EditText
             android:id="@+id/et_recognition_result"
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.5"
+            android:layout_weight="0.4"
             android:inputType="textMultiLine"
             android:textSize="12sp"
             android:textColor="#00F"/>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.05"
+            android:text="@string/text_selected_picture" />
         <ImageView
             android:id="@+id/imgShow"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:layout_weight="0.5"
+            android:layout_weight="0.25"
             android:src="@drawable/ic_camera_blanket"
             android:scaleType="fitCenter"
             android:contentDescription="@string/button_select_picture"
-            android:clickable="true"/>
+            android:clickable="true"
+            android:maxHeight="300dp"/>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.05"
+            android:text="@string/text_processed_picture" />
+
+        <ImageView
+            android:id="@+id/iv_treated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:src="@drawable/ic_camera_blanket"
+            android:scaleType="fitCenter"
+            android:maxHeight="300dp" />
     </LinearLayout>
+
 </LinearLayout>

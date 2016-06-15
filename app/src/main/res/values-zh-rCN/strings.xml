@@ -43,7 +43,10 @@
     <string name="app_camera2_name">相机</string>
     <string name="ocr_tv_recognition_result">识别结果</string>
     <string name="button_select_file">文件</string>
-    <string name="ocr_init_faile_prompt">初始化失败</string>
     <string name="button_select_picture">...</string>
     <string name="set_image_processing">设置是否处理图像</string>
+    <string name="ocr_init_fail_prompt">初始化失败</string>
+    <string name="text_processed_picture">预处理后的图片：</string>
+    <string name="text_selected_picture">选取的图片：</string>
+    <string name="threshold">二值化处理</string>
 </resources>

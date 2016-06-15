@@ -8,39 +8,84 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
+import com.mgtv.qxx.ttsdemo.process.ImgPretreatment;
 import com.mgtv.qxx.ttsdemo.process.ParseImage;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class OcrActivity extends AppCompatActivity {
 
-    private TextView textRecognitionResult;
+    private static TextView textRecognitionResult;
     TessBaseAPI baseApi;
     private String picFile;
     private EditText etSelectPicture;
     private Button btnSelectPic;
     private ImageView imgShow=null;
+
+    private static CheckBox chPreTreat;
+    private static RadioGroup radioGroup;
+    private static ImageView ivTreated;
+    private static Bitmap bitmapTreated;
+    private static Bitmap bitmapSelected;
+
     private String lang = "Chinese";
     private String transLang = "";
     private boolean bImageProcessing = false;
+    private static String textResult;
 
     private static final String TESSERACT_ROOT = "/sdcard2/tesseract/";
     private static final String ENGLISH_LANGUAGE = "eng";
     private static final String CHINESE_LANGUAGE = "chi_sim";
     private static final int ACTIVITY_GET_IMAGE = 10;
     private static final String LOG_TAG = "OcrActivity";
+
+    private static final int SHOWRESULT = 0x101;
+    private static final int SHOWTREATEDIMG = 0x102;
+    private static final int PHOTO_RESULT = 0x12;// 结果
+    private static final int PHOTO_CAPTURE = 0x11;// 拍照
+
+    //    設置文字識別的語言
+    private static String LANGUAGE = "eng";
+
+    // 该handler用于处理修改结果的任务
+    public static Handler myHandler = new Handler() {
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case SHOWRESULT:
+                    if (textResult.equals(""))
+                        textRecognitionResult.setText("识别失败");
+                    else
+                        textRecognitionResult.setText(textResult);
+                    break;
+                case SHOWTREATEDIMG:
+                    textRecognitionResult.setText("识别中......");
+                    showPicture(ivTreated, bitmapTreated);
+                    break;
+            }
+            super.handleMessage(msg);
+        }
+
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +113,8 @@ public class OcrActivity extends AppCompatActivity {
         imgShow=(ImageView) findViewById(R.id.imgShow);
         if (picFile != null && !picFile.isEmpty()){
             imgShow.setImageBitmap(getDiskBitmap(picFile));
+            bitmapSelected = getDiskBitmap(picFile);
         }
-
         btnSelectPic = (Button) findViewById(R.id.btn_select_picture);
 
         textRecognitionResult=new TextView(getBaseContext());
@@ -91,14 +136,33 @@ public class OcrActivity extends AppCompatActivity {
                 }
             }
         );
-        btnSelectPic.setOnClickListener(new View.OnClickListener() {
+        btnSelectPic.setOnClickListener(new selectButtonListener());
+
+        chPreTreat = (CheckBox) findViewById(R.id.ch_threshold);
+        radioGroup = (RadioGroup) findViewById(R.id.radiogroup);
+        ivTreated = (ImageView) findViewById(R.id.iv_treated);
+
+        // 用于设置解析语言
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+
             @Override
-            public void onClick(View v) {
-                Intent intent = new  Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/*");
-                startActivityForResult(intent,ACTIVITY_GET_IMAGE);
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.rb_en:
+                        LANGUAGE = "eng";
+                        break;
+                    case R.id.rb_ch:
+                        LANGUAGE = "chi_sim";
+                        break;
+                }
             }
+
         });
+    }
+
+    // 将图片显示在view中
+    public static void showPicture(ImageView iv, Bitmap bmp){
+        iv.setImageBitmap(bmp);
     }
 
     /**
@@ -113,6 +177,7 @@ public class OcrActivity extends AppCompatActivity {
         protected void onPreExecute()
         {
             textRecognitionResult.setText("正在识别，请稍等");
+            showPicture(ivTreated, bitmapTreated);
             super.onPreExecute();
         }
 
@@ -156,7 +221,33 @@ public class OcrActivity extends AppCompatActivity {
         // 先判断识别语言文件是否存在
 
         // 启动异步任务进行识别
-        new parseImageAsync().execute(picFile);
+        //new parseImageAsync().execute(picFile);
+
+        // 新线程来处理识别
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (chPreTreat.isChecked()) {
+                    bitmapTreated = ImgPretreatment
+                            .doPretreatment(bitmapSelected);
+                    Message msg = new Message();
+                    msg.what = SHOWTREATEDIMG;
+                    myHandler.sendMessage(msg);
+                    textResult = doOcr(bitmapTreated, LANGUAGE);
+                } else {
+                    bitmapTreated = ImgPretreatment
+                            .converyToGrayImg(bitmapSelected);
+                    Message msg = new Message();
+                    msg.what = SHOWTREATEDIMG;
+                    myHandler.sendMessage(msg);
+                    textResult = doOcr(bitmapTreated, LANGUAGE);
+                }
+                Message msg2 = new Message();
+                msg2.what = SHOWRESULT;
+                myHandler.sendMessage(msg2);
+            }
+
+        }).start();
 
         // 显示当前图片
         if (picFile != null && !picFile.equals(""))
@@ -164,6 +255,33 @@ public class OcrActivity extends AppCompatActivity {
             Bitmap bitmap = BitmapFactory.decodeFile(picFile);
             imgShow.setImageBitmap(bitmap);
         }
+    }
+
+    /**
+     * 进行图片识别
+     *
+     * @param bitmap
+     *            待识别图片
+     * @param language
+     *            识别语言
+     * @return 识别结果字符串
+     */
+    public String doOcr(Bitmap bitmap, String language) {
+        TessBaseAPI baseApi = new TessBaseAPI();
+
+        baseApi.init(TESSERACT_ROOT, language);
+
+        // 必须加此行，tess-two要求BMP必须为此配置
+        bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+
+        baseApi.setImage(bitmap);
+
+        String text = baseApi.getUTF8Text();
+
+        baseApi.clear();
+        baseApi.end();
+
+        return text;
     }
 
     private Bitmap getDiskBitmap(String pathString)
@@ -198,6 +316,7 @@ public class OcrActivity extends AppCompatActivity {
             if(resultCode  == RESULT_OK){
                 //得到文件的Uri
                 Uri uri = data.getData(); //获得图片的uri
+                bitmapSelected = decodeUriAsBitmap(uri);
                 //外界的程序访问ContentProvider所提供数据 可以通过ContentResolver接口
                 ContentResolver resolver = getContentResolver();
                 try {
@@ -238,7 +357,111 @@ public class OcrActivity extends AppCompatActivity {
                     etSelectPicture.setText(path);
                 }
             }
+        }else if (requestCode == PHOTO_RESULT) {
+            //得到文件的Uri
+            Uri uri = data.getData(); //获得图片的uri
+
+            bitmapSelected = decodeUriAsBitmap(uri/*Uri.fromFile(new File(IMG_PATH,"temp_cropped.jpg"))*/);
+            if (chPreTreat.isChecked())
+                textRecognitionResult.setText("预处理中......");
+            else
+                textRecognitionResult.setText("识别中......");
+            // 显示选择的图片
+            showPicture(imgShow, bitmapSelected);
+
+            // 新线程来处理识别
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if (chPreTreat.isChecked()) {
+                        bitmapTreated = ImgPretreatment
+                                .doPretreatment(bitmapSelected);
+                        Message msg = new Message();
+                        msg.what = SHOWTREATEDIMG;
+                        myHandler.sendMessage(msg);
+                        textResult = doOcr(bitmapTreated, LANGUAGE);
+                    } else {
+                        bitmapTreated = ImgPretreatment
+                                .converyToGrayImg(bitmapSelected);
+                        Message msg = new Message();
+                        msg.what = SHOWTREATEDIMG;
+                        myHandler.sendMessage(msg);
+                        textResult = doOcr(bitmapTreated, LANGUAGE);
+                    }
+                    Message msg2 = new Message();
+                    msg2.what = SHOWRESULT;
+                    myHandler.sendMessage(msg2);
+                }
+
+            }).start();
+
+        }else if (requestCode == PHOTO_CAPTURE) {
+            textRecognitionResult.setText("abc");
+            startPhotoCrop(Uri.fromFile(new File(TESSERACT_ROOT, "temp.jpg")));
         }
+    }
+
+    // 从相册选取照片并裁剪
+    class selectButtonListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("image/*");
+            intent.putExtra("crop", "true");
+            intent.putExtra("scale", true);
+            intent.putExtra("return-data", false);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT,
+                    Uri.fromFile(new File(TESSERACT_ROOT, "temp_cropped.jpg")));
+            intent.putExtra("outputFormat",
+                    Bitmap.CompressFormat.JPEG.toString());
+            intent.putExtra("noFaceDetection", true); // no face detection
+            startActivityForResult(intent, ACTIVITY_GET_IMAGE);
+        }
+    }
+
+    // 響應菜單
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_tts_settings, menu);
+        return true;
+    }
+
+
+    /**
+     * 调用系统图片编辑进行裁剪
+     */
+    public void startPhotoCrop(Uri uri) {
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(uri, "image/*");
+        intent.putExtra("crop", "true");
+        intent.putExtra("scale", true);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,
+                Uri.fromFile(new File(TESSERACT_ROOT, "temp_cropped.jpg")));
+        intent.putExtra("return-data", false);
+        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+        intent.putExtra("noFaceDetection", true); // no face detection
+        startActivityForResult(intent, PHOTO_RESULT);
+    }
+
+    /**
+     * 根据URI获取位图
+     *
+     * @param uri
+     * @return 对应的位图
+     */
+    private Bitmap decodeUriAsBitmap(Uri uri) {
+        Bitmap bitmap = null;
+        try {
+            bitmap = BitmapFactory.decodeStream(getContentResolver()
+                    .openInputStream(uri));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return bitmap;
     }
 
     /**

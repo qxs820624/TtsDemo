@@ -43,7 +43,10 @@
     <string name="ocr_tv_recognition_result">識別結果</string>
     <string name="button_select_file">文件</string>
     <string name="ocr_et_select_picture">圖片路徑</string>
-    <string name="ocr_init_faile_prompt">初始化失敗</string>
     <string name="button_select_picture">...</string>
-    <string name="set_image_processing">设置是否处理图像</string>
+    <string name="set_image_processing">設置是否處理圖像</string>
+    <string name="ocr_init_fail_prompt">初始化失敗</string>
+    <string name="text_processed_picture">預處理后的圖片：</string>
+    <string name="text_selected_picture">選擇的圖片：</string>
+    <string name="threshold">二值化處理</string>
 </resources>
