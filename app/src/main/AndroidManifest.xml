@@ -39,7 +39,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".TxtReader" />
-        <activity android:name=".SetTts" />
+        <activity android:name=".Settings" />
         <activity
             android:name=".OcrActivity"
             android:label="@string/title_activity_ocr"

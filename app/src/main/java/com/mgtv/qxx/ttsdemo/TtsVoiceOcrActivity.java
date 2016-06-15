@@ -55,7 +55,7 @@ public class TtsVoiceOcrActivity extends Activity implements DirectoryChooserFra
     private static final String DEFAULT_ENCODING = "UTF-8";
 
     private GoogleSpeech googleSpeech;
-    private SetTts ttsSetting;
+    private Settings ttsSetting;
     private String pictureSavePath = "";
 
             //根据不同选项所要变更的文本控件
@@ -184,7 +184,7 @@ public class TtsVoiceOcrActivity extends Activity implements DirectoryChooserFra
 
         // 获取TTS的配置
         ttsSettingFile = sSelectedDir + "/ttsSetting.properties";
-        ttsSetting = new SetTts(ttsSettingFile);
+        ttsSetting = new Settings(ttsSettingFile);
 
         googleSpeech = new GoogleSpeech(this, btnSpeak, ttsSettingFile);
 
@@ -517,6 +517,7 @@ public class TtsVoiceOcrActivity extends Activity implements DirectoryChooserFra
         Bundle bundle=new Bundle();
         bundle.putString("picture_path",pictureSavePath);
         bundle.putString("ocr_language",sSelectedLanguage);
+        bundle.putString(ttsSetting.PROPERTY_IMAGE_PROCESSING, String.valueOf(ttsSetting.getImageProcessing()));
         intent.putExtras(bundle);
         startActivity(intent);
     }
@@ -605,7 +606,7 @@ public class TtsVoiceOcrActivity extends Activity implements DirectoryChooserFra
         switch (itemId) {
             case R.id.c11_setting: // do something here
                 Log.i("MenuTest:", "ItemSelected: setting");
-                Intent intent = new Intent(TtsVoiceOcrActivity.this, SetTts.class);
+                Intent intent = new Intent(TtsVoiceOcrActivity.this, Settings.class);
                 Bundle bd = new Bundle();
                 bd.putString("PropertyFile", ttsSettingFile);
                 intent.putExtras(bd);

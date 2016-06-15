@@ -5,10 +5,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
@@ -21,12 +19,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.googlecode.tesseract.android.TessBaseAPI;
+import com.mgtv.qxx.ttsdemo.process.ParseImage;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
 
 public class OcrActivity extends AppCompatActivity {
 
@@ -38,11 +34,14 @@ public class OcrActivity extends AppCompatActivity {
     private ImageView imgShow=null;
     private String lang = "Chinese";
     private String transLang = "";
+    private boolean bImageProcessing = false;
 
     private static final String TESSERACT_ROOT = "/sdcard2/tesseract/";
     private static final String ENGLISH_LANGUAGE = "eng";
     private static final String CHINESE_LANGUAGE = "chi_sim";
     private static final int ACTIVITY_GET_IMAGE = 10;
+    private static final String LOG_TAG = "OcrActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,45 +59,35 @@ public class OcrActivity extends AppCompatActivity {
         } else {
             transLang = ENGLISH_LANGUAGE;
         }
+        bImageProcessing = Boolean.getBoolean(extras.getString("ImageProcessing"));
+
         // Log.e("OcrActivity",picFile);
         etSelectPicture = (EditText)findViewById(R.id.et_select_picture);
         etSelectPicture.setText(picFile);
 
         imgShow=(ImageView) findViewById(R.id.imgShow);
-        imgShow.setImageBitmap(getDiskBitmap(picFile));
+        if (picFile != null && !picFile.isEmpty()){
+            imgShow.setImageBitmap(getDiskBitmap(picFile));
+        }
 
         btnSelectPic = (Button) findViewById(R.id.btn_select_picture);
 
         textRecognitionResult=new TextView(getBaseContext());
         textRecognitionResult=(TextView)findViewById(R.id.et_recognition_result);
 
-        baseApi=new TessBaseAPI();
-        // baseApi.init(TESSBASE_PATH, CHINESE_LANGUAGE+CHINESE_LANGUAGE); //多字库使用
-        boolean bInitBaseApi = baseApi.init(TESSERACT_ROOT, transLang);
-        baseApi.setPageSegMode(TessBaseAPI.PSM_AUTO);
-        if (!bInitBaseApi)  {
-            Log.e("OCRActivity", "baseApi init Failed!");
-            Toast.makeText(this, this.getResources().getString(R.string.ocr_init_faile_prompt), Toast.LENGTH_SHORT).show();
-            finish();
-        }
-
         findViewById(R.id.btn_recognition).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View sourse) {
-                    //设置要ocr的图片bitmap
-                    // Log.e("OCRActivity", "parse" + picFile);
-
-                    Bitmap bm = PreProcess(getDiskBitmap(picFile));
-                    if (bm != null){
-                        baseApi.setImage(bm);
-                        //根据Init的语言，获得ocr后的字符串
-                        String text1= baseApi.getUTF8Text();
-                        textRecognitionResult.setText(text1);
-                    }else {
-                        textRecognitionResult.setText("SBBBBBBBBBBBBBBBBBBBB");
-                    }
-                    //释放bitmap
-                    baseApi.clear();
+                //设置要ocr的图片bitmap
+                // Log.e("OCRActivity", "parse" + picFile);
+                try {
+                    picFile = etSelectPicture.getText().toString();
+                    testOCR();
+                    // String textRecognized = ParseImage.parseImageToString(picFile,bImageProcessing);
+                    // textRecognitionResult.setText(textRecognized);
+                }catch (Exception e){
+                    Log.e(LOG_TAG,e.toString());
+                }
                 }
             }
         );
@@ -112,78 +101,69 @@ public class OcrActivity extends AppCompatActivity {
         });
     }
 
-    public Bitmap PreProcess(Bitmap bmpFile) {
-        // Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        //在这里创建了一张bitmap
-        // mBitmap = BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_vd_mic_on);
-        //将这张bitmap设置为背景图片
-        //setBackgroundDrawable(new BitmapDrawable(mBitmap));
-        Bitmap newBmpFile;
-        int iBitmapWidth = bmpFile.getWidth();
-        int iBitmapHeight = bmpFile.getHeight();
+    /**
+     * 异步任务，识别图片
+     *
+     * @author duanbokan
+     *
+     */
+    public class parseImageAsync extends AsyncTask<String, Integer, String>
+    {
+        @Override
+        protected void onPreExecute()
+        {
+            textRecognitionResult.setText("正在识别，请稍等");
+            super.onPreExecute();
+        }
 
-        int iArrayColorLengh = iBitmapWidth * iBitmapHeight;
-        try{
+        @Override
+        protected String doInBackground(String... params)
+        {
+            String result = "";
 
-            //创建一个临时文件
-            File file = new File("/sdcard2/tmp/tmp.txt");
-            file.getParentFile().mkdirs();
-
-            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
-            FileChannel channel = randomAccessFile.getChannel();
-            MappedByteBuffer map = channel.map(FileChannel.MapMode.READ_WRITE, 0, iArrayColorLengh *4);
-
-            //将位图信息写进buffer
-            bmpFile.copyPixelsToBuffer(map);
-
-            //释放原位图占用的空间
-            bmpFile.recycle();
-            //创建一个新的位图
-            newBmpFile = Bitmap.createBitmap(iBitmapWidth, iBitmapHeight, Bitmap.Config.ARGB_8888);
-            map.position(0);
-            //从临时缓冲中拷贝位图信息
-            newBmpFile.copyPixelsFromBuffer(map);
-            channel.close();
-            randomAccessFile.close();
-            // -----------------=============================
-            int iArrayColor[]  = new int[iArrayColorLengh];
-            int count = 0;
-            for (int y = 0; y < iBitmapHeight; y++) {
-                for (int x = 0; x < iBitmapWidth; x++) {
-                    //获得Bitmap 图片中每一个点的color颜色值
-                    int color = newBmpFile.getPixel(x, y);
-                    //将颜色值存在一个数组中 方便后面修改
-                    iArrayColor[count] = color;
-                    //如果你想做的更细致的话 可以把颜色值的R G B 拿到做响应的处理 笔者在这里就不做更多解释
-                    int r = Color.red(color);
-                    int g = Color.green(color);
-                    int b = Color.blue(color);
-
-                    count++;
-
-                    //去掉边框
-                    if (x == 0 || y == 0 || x == iBitmapWidth - 1 || y == iBitmapHeight - 1)
-                    {
-                        newBmpFile.setPixel(x, y, Color.WHITE);
-                    }else {
-                        //如果点的颜色是背景干扰色，则变为白色
-                        if (color == Color.rgb(204, 204, 51) ||
-                                color == Color.rgb(153, 204, 51) ||
-                                color == Color.rgb(204, 255, 102) ||
-                                color == Color.rgb(204, 204, 204) ||
-                                color == Color.rgb(204, 255, 51))
-                        {
-                            newBmpFile.setPixel(x, y, Color.WHITE);
-                        }
-                    }
-                }
+            try
+            {
+                result = ParseImage.getInstance().parseImageToString(params[0],bImageProcessing);
             }
+            catch (IOException e)
+            {
+                result = "";
+                e.printStackTrace();
+            }
+            return result;
         }
-        catch(Exception ex){
-            newBmpFile=null;
+
+        @Override
+        protected void onPostExecute(String result)
+        {
+            if (result != null && !result.equals(""))
+            {
+                textRecognitionResult.setText("识别完毕，结果为： \n" + result);
+            }
+            else
+            {
+                textRecognitionResult.setText("识别失败");
+            }
+            super.onPostExecute(result);
         }
-        return newBmpFile;
-        // long startTime = System.currentTimeMillis();
+    }
+
+    /**
+     * 测试OCR识别
+     */
+    public void testOCR()
+    {
+        // 先判断识别语言文件是否存在
+
+        // 启动异步任务进行识别
+        new parseImageAsync().execute(picFile);
+
+        // 显示当前图片
+        if (picFile != null && !picFile.equals(""))
+        {
+            Bitmap bitmap = BitmapFactory.decodeFile(picFile);
+            imgShow.setImageBitmap(bitmap);
+        }
     }
 
     private Bitmap getDiskBitmap(String pathString)
@@ -223,7 +203,9 @@ public class OcrActivity extends AppCompatActivity {
                 try {
                     Bitmap bm = MediaStore.Images.Media.getBitmap(resolver, uri);
                     //显得到bitmap图片
-                    imgShow.setImageBitmap(bm);
+                    if (bm != null) {
+                        imgShow.setImageBitmap(bm);
+                    }
                 }catch (IOException e) {
                     Log.e("ACTIVITY_GET_IMAGE",e.toString());
                 }
@@ -236,16 +218,23 @@ public class OcrActivity extends AppCompatActivity {
                     Log.e("path",path);
                     fileType = path.substring(path.lastIndexOf(".")+1,path.length());
                 }
-                Log.e("fileType",fileType);
+                Log.i("fileType",fileType);
                 if(fileType.startsWith("image"))//判断用户选择的是否为图片
                 {
                     //根据返回的uri获取图片路径
                     Cursor cursor = resolver.query(uri,  new String[]{MediaStore.Images.Media.DATA}, null, null, null);
                     cursor.moveToFirst();
                     String  path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                    //data=Intent { dat=content://com.android.externalstorage.documents/document/6005-19D5:Pictures/Screenshots/Screenshot_2016-05-29-10-45-34.png flg=0x1 }}
 
-                    Log.e("image path",path);
-                    //do  anything you want
+                    if (path!=null && !path.isEmpty()){
+                        Log.d("image path",path);
+                        //do  anything you want
+                    }else {
+                        path = QxxExec.translateAbsolutePath(data.getData().getPath());
+                        Log.i("get image path",path);
+                    }
+                    picFile = path;
                     etSelectPicture.setText(path);
                 }
             }

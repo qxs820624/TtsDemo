@@ -54,4 +54,5 @@
     <string name="ocr_tv_recognition_result">Show the result of OCR</string>
     <string name="ocr_init_faile_prompt">baseApi init Failed!</string>
     <string name="button_select_picture">...</string>
+    <string name="set_image_processing">set enabled process image</string>
 </resources>

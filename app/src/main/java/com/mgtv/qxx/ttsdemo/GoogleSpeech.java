@@ -30,7 +30,7 @@ public class GoogleSpeech implements TextToSpeech.OnInitListener{
     private AudioManager audioManager; // 音频管理对象
 
     // 设置对象
-    private static SetTts ttsSetting;
+    private static Settings ttsSetting;
 
     private TextToSpeech mTts;
 
@@ -64,7 +64,7 @@ public class GoogleSpeech implements TextToSpeech.OnInitListener{
     public GoogleSpeech(Context context, Button btnSpeak, String ttsSettingFile){
         this.btnSpeak = btnSpeak;
         this.ttsSettingFile = ttsSettingFile;
-        this.ttsSetting = new SetTts(ttsSettingFile);
+        this.ttsSetting = new Settings(ttsSettingFile);
         this.context = context;
         initTts();
     }

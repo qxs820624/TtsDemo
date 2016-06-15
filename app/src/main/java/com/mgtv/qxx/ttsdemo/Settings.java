@@ -7,6 +7,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -21,9 +22,9 @@ import java.util.Properties;
 /**
  * Created by Administrator on 2016/5/16.
  */
-public class SetTts extends Activity {
+public class Settings extends Activity {
 
-    private  static final String LOG_TAG="SetTts";
+    private  static final String LOG_TAG="Settings";
 
     private Button btSaveSetting;
     private String propertyFile = "";
@@ -36,11 +37,14 @@ public class SetTts extends Activity {
     private String language, encoding;
     private float speechPitch, speechRate;
     private int speechLength;
+    private boolean bImageProcessing;
 
+    private CheckBox cbImageProcessing;
     private  static final String DEFAULT_ENCODING = "UTF-8";
+    public  static final String PROPERTY_IMAGE_PROCESSING = "ImageProcessing";
+    public  static final String PROPERTY_SPEECH_LENGTH = "SpeechLength";
 
-
-    public SetTts(String ttsSettingFile){
+    public Settings(String ttsSettingFile){
         Log.d(LOG_TAG,"SetTts ttsSettingFile");
         if (ttsSettingFile.length() > 0 ){
             this.propertyFile = ttsSettingFile;
@@ -48,7 +52,7 @@ public class SetTts extends Activity {
     }
 
     // constructor
-    public SetTts(){
+    public Settings(){
         Log.d(LOG_TAG,"Start SetTts Activity");
     }
 
@@ -69,7 +73,8 @@ public class SetTts extends Activity {
     }
 
     public int getSpeechLength(){
-        return this.speechLength;
+        Properties properties = loadConfig();
+        return Integer.getInteger(properties.getProperty(PROPERTY_SPEECH_LENGTH));
     }
 
     public void setTtsLanguage(String language){
@@ -79,11 +84,23 @@ public class SetTts extends Activity {
         saveConfig(properties);
     }
 
+    public boolean getImageProcessing(){
+        Properties properties = loadConfig();
+        return Boolean.getBoolean(properties.getProperty(PROPERTY_IMAGE_PROCESSING));
+    }
+
+    public void setImageProcessing(boolean bImageProcessing){
+        this.bImageProcessing = bImageProcessing;
+        Properties properties = loadConfig();
+        properties.put(PROPERTY_IMAGE_PROCESSING,String.valueOf(bImageProcessing));
+        saveConfig(properties);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.e(LOG_TAG,"SetTts");
+        // Log.e(LOG_TAG,"SetTts");
 
         setContentView(R.layout.settings);
         btSaveSetting = (Button) findViewById(R.id.bt_save_setting);
@@ -97,6 +114,7 @@ public class SetTts extends Activity {
         pitchBar = (SeekBar) findViewById(R.id.seekBar_speech_pitch) ;
         rateBar = (SeekBar) findViewById(R.id.seekBar_speech_rate);
         lengthBar = (SeekBar) findViewById(R.id.seekBar_speech_length) ;
+        cbImageProcessing = (CheckBox) findViewById(R.id.checkbox_image_processing);
 
         //新页面接收数据
         Bundle bundle = this.getIntent().getExtras();
@@ -104,7 +122,8 @@ public class SetTts extends Activity {
 
         // 获取配置
         properties = loadConfig();
-        if(properties==null){
+        // Log.e(LOG_TAG,properties.toString());
+        if(properties==null || properties.isEmpty()){
             //配置文件不存在的时候创建配置文件 初始化配置信息
             properties=new Properties();
 
@@ -113,12 +132,21 @@ public class SetTts extends Activity {
             properties.setProperty("Language","Chinese");
 
             properties.setProperty("Encoding", "UTF-8");
-            properties.setProperty("SpeechLength", "200");
+            properties.setProperty(PROPERTY_SPEECH_LENGTH, "200");
+            properties.setProperty(PROPERTY_IMAGE_PROCESSING,"true");
             saveConfig(properties);
         }
         etSpeechPitch.setText(properties.getProperty("SpeechPitch"));
         etSpeechRate.setText(properties.getProperty("SpeechRate"));
-        etSpeechLength.setText(properties.getProperty("SpeechLength"));
+        etSpeechLength.setText(properties.getProperty(PROPERTY_SPEECH_LENGTH));
+
+        String s = properties.getProperty(PROPERTY_IMAGE_PROCESSING);
+        if (s.equalsIgnoreCase("true")){
+            cbImageProcessing.setChecked(true);
+        }else{
+            cbImageProcessing.setChecked(false);
+        }
+
 
         float fpitchBar = Float.parseFloat(properties.getProperty("SpeechPitch")) * 10.0f;
         pitchBar.setProgress(Integer.parseInt(String.valueOf(Math.round(fpitchBar))));
@@ -126,7 +154,7 @@ public class SetTts extends Activity {
         float frateBar = Float.parseFloat(properties.getProperty("SpeechRate")) * 10.0f;
         rateBar.setProgress(Integer.parseInt(String.valueOf(Math.round(frateBar))));
 
-        lengthBar.setProgress(Integer.parseInt(properties.getProperty("SpeechLength")));
+        lengthBar.setProgress(Integer.parseInt(properties.getProperty(PROPERTY_SPEECH_LENGTH)));
 
         String propertiesEncoding = properties.getProperty("Encoding");
         if (propertiesEncoding == null || propertiesEncoding.isEmpty()){
@@ -219,10 +247,10 @@ public class SetTts extends Activity {
                 String pitch = etSpeechPitch.getText().toString();
                 String rate = etSpeechRate.getText().toString();
                 String length = etSpeechLength.getText().toString();
-
+                boolean bImageProcessing = cbImageProcessing.isChecked();
                 properties = loadConfig();
 
-                if(properties==null){
+                if(properties==null || properties.isEmpty()){
                     //配置文件不存在的时候创建配置文件 初始化配置信息
                     properties=new Properties();
 
@@ -231,10 +259,12 @@ public class SetTts extends Activity {
                     properties.setProperty("Language","Chinese");
 
                     properties.put("Encoding", "UTF-8");
-                    properties.put("SpeechLength", "200"); //也可以添加基本类型数据 get时就需要强制转换成封装类型
-
+                    properties.put(PROPERTY_SPEECH_LENGTH, "200"); //也可以添加基本类型数据 get时就需要强制转换成封装类型
+                    properties.put(PROPERTY_IMAGE_PROCESSING,"false");
                     saveConfig(properties);
                 }
+
+                properties.put(PROPERTY_IMAGE_PROCESSING,String.valueOf(bImageProcessing));
 
                 if (!pitch.isEmpty()){
                     // Toast.makeText(getBaseContext(),pitch,Toast.LENGTH_SHORT).show();
@@ -252,9 +282,9 @@ public class SetTts extends Activity {
 
                 if (!length.isEmpty()){
                     // Toast.makeText(getBaseContext(),length,Toast.LENGTH_SHORT).show();
-                    properties.put("SpeechLength",length);
+                    properties.put(PROPERTY_SPEECH_LENGTH,length);
                 }else{
-                    properties.put("SpeechLength","200");
+                    properties.put(PROPERTY_SPEECH_LENGTH,"200");
                 }
 
                 String EncodingStr = spEncoding.getSelectedItem().toString();
@@ -263,10 +293,10 @@ public class SetTts extends Activity {
                 }else{
                     properties.put("Encoding","UTF-8");
                 }
-
+                // Log.e(LOG_TAG,properties.toString());
                 saveConfig(properties);
                 Toast.makeText(getBaseContext(),"保存配置成功",Toast.LENGTH_SHORT).show();
-                SetTts.this.finish();
+                Settings.this.finish();
             }
         });
 
@@ -346,11 +376,13 @@ public class SetTts extends Activity {
     //保存配置文件
     public boolean saveConfig(Properties properties) {
         try {
+            // Log.e(LOG_TAG,propertyFile);
             File fil=new File(propertyFile);
             if(!fil.exists())
                 fil.createNewFile();
             FileOutputStream s = new FileOutputStream(fil);
-            properties.store(s, "");
+            properties.store(s, "Settings");
+            // Log.e(LOG_TAG,String.valueOf(fil.length()));
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -389,7 +421,7 @@ public class SetTts extends Activity {
             prop.setProperty("Language","Chinese");
 
             prop.put("Encoding", "UTF-8");
-            prop.put("SpeechLength", "200"); //也可以添加基本类型数据 get时就需要强制转换成封装类型
+            prop.put(PROPERTY_SPEECH_LENGTH, "200"); //也可以添加基本类型数据 get时就需要强制转换成封装类型
             saveConfig(prop);
         }
 
@@ -411,11 +443,11 @@ public class SetTts extends Activity {
         language = prop.getProperty("Language");
         encoding = prop.getProperty("Encoding");
 
-        String sSpeechLength = prop.getProperty("SpeechLength");
+        String sSpeechLength = prop.getProperty(PROPERTY_SPEECH_LENGTH);
         if (sSpeechLength == null || sSpeechLength.isEmpty()) {
             speechLength = 200;
         }else {
-            speechLength = Integer.parseInt(prop.getProperty("SpeechLength"));
+            speechLength = Integer.parseInt(prop.getProperty(PROPERTY_SPEECH_LENGTH));
         }
 
         if (encoding == null || encoding.isEmpty()){

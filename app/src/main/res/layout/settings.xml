@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.mgtv.qxx.ttsdemo.SetTts">
+    tools:context="com.mgtv.qxx.ttsdemo.Settings">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -141,20 +141,33 @@
             android:layout_toRightOf="@+id/seekBar_speech_length"
             android:layout_marginTop="15dp"
             android:maxLength="5"/>
-
+        <CheckBox
+            android:id="@+id/checkbox_image_processing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/seekBar_speech_length"
+            android:text="@string/set_image_processing"
+            android:checked="false"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="5dp"
+            android:textSize="9pt"/>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/bt_save_setting"
-            android:layout_gravity="right"
+            android:layout_gravity="end"
             android:id="@+id/bt_save_setting"
             android:textColor="#150"
             android:textStyle="bold"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             android:layout_marginBottom="10dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"
             android:background="@drawable/shape"/>
 
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     </RelativeLayout>
 </LinearLayout>

@@ -45,4 +45,5 @@
     <string name="ocr_et_select_picture">圖片路徑</string>
     <string name="ocr_init_faile_prompt">初始化失敗</string>
     <string name="button_select_picture">...</string>
+    <string name="set_image_processing">设置是否处理图像</string>
 </resources>
