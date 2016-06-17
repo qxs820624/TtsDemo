@@ -75,6 +75,31 @@ public class OcrActivity extends Activity {
 
     };
 
+    private Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            if (chPreTreat.isChecked()) {
+                bitmapTreated = ImgPretreatment
+                        .doPretreatment(bitmapSelected);
+                Message msg = new Message();
+                msg.what = SHOWTREATEDIMG;
+                myHandler.sendMessage(msg);
+                textResult = doOcr(bitmapTreated, LANGUAGE);
+            } else {
+                bitmapTreated = ImgPretreatment
+                        .converyToGrayImg(bitmapSelected);
+                Message msg = new Message();
+                msg.what = SHOWTREATEDIMG;
+                myHandler.sendMessage(msg);
+                textResult = doOcr(bitmapTreated, LANGUAGE);
+            }
+            Message msg2 = new Message();
+            msg2.what = SHOWRESULT;
+            myHandler.sendMessage(msg2);
+        }
+
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,6 +139,19 @@ public class OcrActivity extends Activity {
 
         });
 
+        //新页面接收数据
+        Bundle bundle = this.getIntent().getExtras();
+        Intent intentPicture = this.getIntent();
+        String picture_path = bundle.getString("picture_path");
+        if (picture_path == null || picture_path.isEmpty()){
+            if (intentPicture == null){
+                return;
+            }
+            bitmapSelected = decodeUriAsBitmap(intentPicture.getData());
+        }else {
+            bitmapSelected = decodeUriAsBitmap(Uri.parse(picture_path));
+        }
+        new Thread(runnable).start();
     }
 
     @Override
@@ -163,30 +201,7 @@ public class OcrActivity extends Activity {
             showPicture(ivSelected, bitmapSelected);
 
             // 新线程来处理识别
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    if (chPreTreat.isChecked()) {
-                        bitmapTreated = ImgPretreatment
-                                .doPretreatment(bitmapSelected);
-                        Message msg = new Message();
-                        msg.what = SHOWTREATEDIMG;
-                        myHandler.sendMessage(msg);
-                        textResult = doOcr(bitmapTreated, LANGUAGE);
-                    } else {
-                        bitmapTreated = ImgPretreatment
-                                .converyToGrayImg(bitmapSelected);
-                        Message msg = new Message();
-                        msg.what = SHOWTREATEDIMG;
-                        myHandler.sendMessage(msg);
-                        textResult = doOcr(bitmapTreated, LANGUAGE);
-                    }
-                    Message msg2 = new Message();
-                    msg2.what = SHOWRESULT;
-                    myHandler.sendMessage(msg2);
-                }
-
-            }).start();
+            new Thread(runnable).start();
 
         }
 

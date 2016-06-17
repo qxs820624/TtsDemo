@@ -226,7 +226,6 @@ public class TtsVoiceOcrActivity extends Activity implements DirectoryChooserFra
             public void onClick(View view) {
                 Snackbar.make(view, "进行图像识别，请确保照相机的权限", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-                //  startOcrActivity();
                 startCamera2Activity();
             }
         });
@@ -473,7 +472,7 @@ public class TtsVoiceOcrActivity extends Activity implements DirectoryChooserFra
             if (resultCode != RESULT_OK){
                 pictureSavePath = "";
             }
-            startOcrActivity();
+            startOcrActivity(data);
         }
         // 语音识别后的回调，将识别的字串以Toast显示
         super.onActivityResult(requestCode, resultCode, data);
@@ -513,7 +512,7 @@ public class TtsVoiceOcrActivity extends Activity implements DirectoryChooserFra
         startActivityForResult(intent, REQ_OCR);
     }
 
-    private void startOcrActivity() {
+    private void startOcrActivity(Intent data) {
         // Log.e("REQ_OCR", pictureSavePath);
         Intent intent = new Intent(this, OcrActivity.class);
         // Bundle bundle=new Bundle();
@@ -521,6 +520,7 @@ public class TtsVoiceOcrActivity extends Activity implements DirectoryChooserFra
         // bundle.putString("ocr_language",sSelectedLanguage);
         // bundle.putString(ttsSetting.PROPERTY_IMAGE_PROCESSING, String.valueOf(ttsSetting.getImageProcessing()));
         // intent.putExtras(bundle);
+        intent.putExtras(data);
         startActivity(intent);
     }
     /**

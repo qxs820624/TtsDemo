@@ -816,7 +816,7 @@ public class Camera2BasicFragment extends Fragment
                     CameraMetadata.CONTROL_AF_TRIGGER_START);
             // Tell #mCaptureCallback to wait for the lock.
             mState = STATE_WAITING_LOCK;
-            Log.e(LOG_TAG,"lockFocus");
+            Log.v(LOG_TAG,"lockFocus");
             mCaptureSession.capture(mPreviewRequestBuilder.build(), mCaptureCallback,
                     mBackgroundHandler);
         } catch (CameraAccessException e) {
@@ -927,9 +927,9 @@ public class Camera2BasicFragment extends Fragment
             case R.id.picture: {
                 takePicture();
                 Intent intent = new Intent(getActivity(), OcrActivity.class);
-                // Bundle bundle=new Bundle();
-                // bundle.putString("picture_path",mFile.getPath());
-                // intent.putExtras(bundle);
+                 Bundle bundle=new Bundle();
+                 bundle.putString("picture_path",mFile.getPath());
+                 intent.putExtras(bundle);
                 startActivity(intent);
                 break;
             }
