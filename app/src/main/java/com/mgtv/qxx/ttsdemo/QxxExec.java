@@ -76,6 +76,10 @@ public class QxxExec {
         return Environment.getExternalStorageDirectory().getPath();
     }
 
+
+    public String getDownloadCacheDirectory(){
+        return Environment.getDownloadCacheDirectory().getPath();
+    }
     /**
      * 执行命令—单条
      * @param command

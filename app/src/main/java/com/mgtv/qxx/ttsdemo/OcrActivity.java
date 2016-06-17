@@ -38,7 +38,7 @@ public class OcrActivity extends Activity {
     private static String LOG_TAG = "OCRActivity";
 
     private static String LANGUAGE = "eng";
-    private static String IMG_PATH = getSDPath() + java.io.File.separator + "ocrtest";
+    private static String IMG_PATH = QxxExec.getExternalSDCardPath() + java.io.File.separator + "DCIM" + java.io.File.separator + "Ocr";
 
     private static TextView tvResult;
     private static ImageView ivSelected;
@@ -81,6 +81,10 @@ public class OcrActivity extends Activity {
             if (chPreTreat.isChecked()) {
                 bitmapTreated = ImgPretreatment
                         .doPretreatment(bitmapSelected);
+                if (bitmapTreated == null){
+                    LogPrint(LOG_LEVEL.ERROR,"doPretreatment Error!");
+                    return;
+                }
                 Message msg = new Message();
                 msg.what = SHOWTREATEDIMG;
                 myHandler.sendMessage(msg);
@@ -147,12 +151,53 @@ public class OcrActivity extends Activity {
             if (bundle != null) {
                 picture_path = bundle.getString("picture_path");
             }
-            if (picture_path == null || picture_path.isEmpty()){
-                bitmapSelected = decodeUriAsBitmap(intentPicture.getData());
-            }else {
-                bitmapSelected = decodeUriAsBitmap(Uri.parse(picture_path));
+            LogPrint(LOG_LEVEL.INFO,"picture_path = %s",picture_path);
+            if (picture_path != null && !picture_path.isEmpty()){
+                ImgPretreatment.setImgPath(picture_path);
+                bitmapSelected = ImgPretreatment.getDiskBitmap(picture_path);
+                if (chPreTreat.isChecked())
+                    tvResult.setText("预处理中......");
+                else
+                    tvResult.setText("识别中......");
+                // 显示选择的图片
+                showPicture(ivSelected, bitmapSelected);
+
+                if (bitmapSelected != null){
+                    new Thread(runnable).start();
+                }
             }
-            new Thread(runnable).start();
+        }
+    }
+
+    // 枚举日志级别
+    private enum LOG_LEVEL{
+        DEBUG,      // 调试
+        VERBOSE,    // 随便
+        INFO,       // 信息
+        WARNING,    // 警告
+        CRITICAL,   // 严重
+        ERROR       // 错误
+    }
+
+    private void LogPrint(LOG_LEVEL level, String fmt, Object ...args){
+        switch (level){
+            case DEBUG:
+                Log.e(LOG_TAG, String.format(fmt, args));
+                break;
+            case VERBOSE:
+            default:
+                Log.v(LOG_TAG, String.format(fmt, args));
+                break;
+            case INFO:
+                Log.i(LOG_TAG, String.format(fmt, args));
+                break;
+            case WARNING:
+                Log.w(LOG_TAG, String.format(fmt, args));
+                break;
+            case CRITICAL:
+            case ERROR:
+                Log.e(LOG_TAG, String.format(fmt, args));
+                break;
         }
     }
 
@@ -163,12 +208,49 @@ public class OcrActivity extends Activity {
         return true;
     }
 
+    private String getImagePath(Intent data){
+
+        String  path = "";
+        Uri uri = data.getData(); //获得图片的uri
+        ContentResolver resolver = getContentResolver();
+        // ContentResolver对象的getType方法可返回形如content://的Uri的类型
+        // 如果是一张图片，返回结果为image/jpeg或image/png等
+        String fileType = resolver.getType(uri);
+
+        //根据返回的uri获取图片路径
+        Cursor cursor = resolver.query(uri,  new String[]{MediaStore.Images.Media.DATA}, null, null, null);
+        try {
+            if (cursor != null){
+                cursor.moveToFirst();
+                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+                cursor.close();
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            return path;
+        }
+        //data=Intent { dat=content://com.android.externalstorage.documents/document/6005-19D5:Pictures/Screenshots/Screenshot_2016-05-29-10-45-34.png flg=0x1 }}
+        if (path!=null && !path.isEmpty()){
+            Log.d(LOG_TAG,path);
+            //do  anything you want
+        }else {
+            Log.i(LOG_TAG,"data.toString()=" + data.toString());
+            path = QxxExec.translateAbsolutePath(data.getData().getPath());
+            Log.i(LOG_TAG,path);
+        }
+
+        return path;
+    }
+
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (resultCode == Activity.RESULT_CANCELED)
             return;
 
+        ImgPretreatment.setImgPath(getImagePath(data));
         if (requestCode == PHOTO_CAPTURE) {
             tvResult.setText("abc");
             Log.v(LOG_TAG, "requestCode == PHOTO_CAPTURE" );
@@ -177,23 +259,6 @@ public class OcrActivity extends Activity {
 
         // 处理结果
         if (requestCode == PHOTO_RESULT) {
-            //得到文件的Uri
-//            Log.i(LOG_TAG,data.toString());
-//            Log.i(LOG_TAG,getImgPath(data));
-//            Uri uri = data.getData(); //获得图片的uri
-//
-//            if (uri == null ){
-//                Log.e(LOG_TAG, "uri is null");
-//                return;
-//            }else if (uri.toString().isEmpty()){
-//                Log.e(LOG_TAG, "uri is empty");
-//                return;
-//            }
-//
-//            if (!(new File(uri.getPath())).exists()){
-//                Log.e(LOG_TAG, "uri is not exists");
-//                return;
-//            }
             bitmapSelected = decodeUriAsBitmap(data.getData() /*Uri.fromFile(new File(IMG_PATH,"temp_cropped.jpg"))*/);
             if (chPreTreat.isChecked())
                 tvResult.setText("预处理中......");
@@ -261,7 +326,7 @@ public class OcrActivity extends Activity {
     public String doOcr(Bitmap bitmap, String language) {
         TessBaseAPI baseApi = new TessBaseAPI();
 
-        baseApi.init(getSDPath(), language);
+        baseApi.init(QxxExec.getExternalSDCardPath() + java.io.File.separator + "tesseract" , language);
 
         // 必须加此行，tess-two要求BMP必须为此配置
         bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
@@ -276,20 +341,6 @@ public class OcrActivity extends Activity {
         return text;
     }
 
-    /**
-     * 获取sd卡的路径
-     *
-     * @return 路径的字符串
-     */
-    public static String getSDPath() {
-        File sdDir = null;
-        boolean sdCardExist = Environment.getExternalStorageState().equals(
-                android.os.Environment.MEDIA_MOUNTED); // 判断sd卡是否存在
-        if (sdCardExist) {
-            sdDir = Environment.getExternalStorageDirectory();// 获取外存目录
-        }
-        return sdDir.toString();
-    }
 
     /**
      * 调用系统图片编辑进行裁剪
@@ -299,8 +350,7 @@ public class OcrActivity extends Activity {
         intent.setDataAndType(uri, "image/*");
         intent.putExtra("crop", "true");
         intent.putExtra("scale", true);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT,
-                Uri.fromFile(new File(IMG_PATH, "temp_cropped.jpg")));
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(IMG_PATH, "temp_cropped.jpg")));
         Log.v(LOG_TAG,"startPhotoCrop " + IMG_PATH);
         intent.putExtra("return-data", false);
         intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
@@ -326,68 +376,4 @@ public class OcrActivity extends Activity {
         return bitmap;
     }
 
-    private Bitmap getDiskBitmap(String pathString)
-    {
-        Bitmap bitmap = null;
-        try
-        {
-            File file = new File(pathString);
-            if(file.exists())
-            {
-                BitmapFactory.Options opts = new BitmapFactory.Options();
-                // 设置为ture只获取图片一半大小
-                opts.inSampleSize=1;
-                bitmap = BitmapFactory.decodeFile(pathString,opts);
-                //Bitmap newbitmap = BitmapFactory.decodeResource(bitmap.getRowBytes(),R.drawable.ic_vd_mic_on); //createBitmap(bitmap.getWidth(), bitmap.getHeight(),null);
-            }else{
-                Toast.makeText(this,"file not exists",Toast.LENGTH_LONG).show();
-            }
-        } catch (Exception e)
-        {
-            // TODO: handle exception
-            Log.e("Ocr-getDiskBitmap",e.toString());
-            Toast.makeText(this,"OcrActivity getDiskBitmap" + e.toString(), Toast.LENGTH_LONG).show();
-        }
-        return bitmap;
-    }
-
-    private String getImgPath(Intent data){
-        String  path = "";
-        Uri uri = data.getData(); //获得图片的uri
-        ContentResolver resolver = getContentResolver();
-        // ContentResolver对象的getType方法可返回形如content://的Uri的类型
-        // 如果是一张图片，返回结果为image/jpeg或image/png等
-        String fileType = resolver.getType(uri);
-        if (fileType == null || fileType.isEmpty()){
-            path = uri.getPath();
-            Log.e("path",path);
-            fileType = path.substring(path.lastIndexOf(".")+1,path.length());
-        }
-        Log.i("fileType",fileType);
-        if(fileType.startsWith("image"))//判断用户选择的是否为图片
-        {
-            //根据返回的uri获取图片路径
-            Cursor cursor = resolver.query(uri,  new String[]{MediaStore.Images.Media.DATA}, null, null, null);
-            try {
-                if (cursor != null){
-                    cursor.moveToFirst();
-                    path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-                    cursor.close();
-                }
-            }catch (Exception e) {
-                e.printStackTrace();
-                return path;
-            }
-            //data=Intent { dat=content://com.android.externalstorage.documents/document/6005-19D5:Pictures/Screenshots/Screenshot_2016-05-29-10-45-34.png flg=0x1 }}
-            if (path!=null && !path.isEmpty()){
-                Log.d(LOG_TAG,path);
-                //do  anything you want
-            }else {
-                Log.i(LOG_TAG,"data.toString()=" + data.toString());
-                path = QxxExec.translateAbsolutePath(data.getData().getPath());
-                Log.i(LOG_TAG,path);
-            }
-        }
-        return path;
-    }
 }

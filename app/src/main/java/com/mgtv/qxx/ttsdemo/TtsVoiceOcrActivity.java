@@ -515,14 +515,14 @@ public class TtsVoiceOcrActivity extends Activity implements DirectoryChooserFra
     private void startOcrActivity(Intent data) {
         // Log.e("REQ_OCR", pictureSavePath);
         Intent intent = new Intent(this, OcrActivity.class);
-        // Bundle bundle=new Bundle();
-        // bundle.putString("picture_path",pictureSavePath);
+         Bundle bundle=new Bundle();
+         bundle.putString("picture_path",pictureSavePath);
         // bundle.putString("ocr_language",sSelectedLanguage);
         // bundle.putString(ttsSetting.PROPERTY_IMAGE_PROCESSING, String.valueOf(ttsSetting.getImageProcessing()));
-        // intent.putExtras(bundle);
-        if (data != null) {
-            intent.putExtras(data);
-        }
+         intent.putExtras(bundle);
+//        if (data != null) {
+//            intent.putExtras(data);
+//        }
         startActivity(intent);
     }
     /**

@@ -1,17 +1,35 @@
 package com.mgtv.qxx.ttsdemo.process;
 
+import android.content.ContentResolver;
+import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.mgtv.qxx.ttsdemo.QxxExec;
+
+import java.io.File;
+import java.io.RandomAccessFile;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 
 /**
  * Created by Administrator on 2016/6/15.
  */
 
 public class ImgPretreatment {
-
+    private static final String LOG_TAG = "ImgPretreatment";
     private static Bitmap img;
+    private static String imgPath;
     private static int imgWidth;
     private static int imgHeight;
     private static int[] imgPixels;
@@ -39,6 +57,39 @@ public class ImgPretreatment {
         return getGrayImg();
     }
 
+    public static void setImgPath(String path){
+        imgPath = path;
+    }
+
+    private static String getImagePath(){
+        return imgPath;
+    }
+
+
+    public static Bitmap getDiskBitmap(String pathString)
+    {
+        Bitmap bitmap = null;
+        try
+        {
+            File file = new File(pathString);
+            if(file.exists())
+            {
+                BitmapFactory.Options opts = new BitmapFactory.Options();
+                // 设置为ture只获取图片一半大小
+                opts.inSampleSize=1;
+                bitmap = BitmapFactory.decodeFile(pathString,opts);
+                //Bitmap newbitmap = BitmapFactory.decodeResource(bitmap.getRowBytes(),R.drawable.ic_vd_mic_on); //createBitmap(bitmap.getWidth(), bitmap.getHeight(),null);
+            }else{
+                Log.e(LOG_TAG,"getDiskBitmap failed!");
+            }
+        } catch (Exception e)
+        {
+            // TODO: handle exception
+            Log.e("Ocr-getDiskBitmap",e.toString());
+        }
+        return bitmap;
+    }
+
     /**
      * 对图像进行预处理
      *
@@ -47,7 +98,12 @@ public class ImgPretreatment {
      */
     public static Bitmap doPretreatment(Bitmap img) {
 
-        setImgInfo(img);
+        Bitmap rotatedBitmap = RotateProcess(img);
+        if (rotatedBitmap == null) {
+            Log.e(LOG_TAG, "RotateProcess FAILED! rotatedBitmap = null");
+            return null;
+        }
+        setImgInfo(PreProcess(rotatedBitmap));
 
         Bitmap grayImg = getGrayImg();
 
@@ -327,4 +383,143 @@ public class ImgPretreatment {
         }
         return pix[i];
     }
+
+    public static Bitmap RotateProcess(Bitmap img){
+        String path = getImagePath();
+        if (path == null || path.isEmpty()){
+            Log.e(LOG_TAG, "RotateProcess FAILED! getImagePath is  Empty");
+            return null;
+        }
+        // 图片旋转角度
+        int rotate = 0;
+        ExifInterface exif = null;
+        int imageOrientation = 0;
+        try {
+            if (path != null && !path.isEmpty()){
+                exif =  new ExifInterface(path);
+            }
+
+
+            // 先获取当前图像的方向，判断是否需要旋转
+            if (exif != null) {
+                imageOrientation = exif
+                    .getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                            ExifInterface.ORIENTATION_NORMAL);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        Log.i("ImgPretreatment", "Current image orientation is " + imageOrientation);
+
+        switch (imageOrientation)
+        {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                rotate = 90;
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                rotate = 180;
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                rotate = 270;
+                break;
+            default:
+                break;
+        }
+        Log.i(LOG_TAG, "Current image need rotate: " + rotate);
+        if (rotate != 0){
+            // 获取当前图片的宽和高
+            int w = img.getWidth();
+            int h = img.getHeight();
+
+            // 使用Matrix对图片进行处理
+            Matrix mtx = new Matrix();
+            mtx.preRotate(rotate);
+
+            // 旋转图片
+            img = Bitmap.createBitmap(img, 0, 0, w, h, mtx, false);
+            img = img.copy(Bitmap.Config.ARGB_8888, true);
+        }
+
+        return img;
+    }
+
+    public static Bitmap PreProcess(Bitmap bmpFile) {
+        // Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        //在这里创建了一张bitmap
+        // mBitmap = BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_vd_mic_on);
+        //将这张bitmap设置为背景图片
+        //setBackgroundDrawable(new BitmapDrawable(mBitmap));
+
+        Bitmap newBmpFile;
+        int iBitmapWidth = bmpFile.getWidth();
+        int iBitmapHeight = bmpFile.getHeight();
+
+        int iArrayColorLengh = iBitmapWidth * iBitmapHeight;
+        try{
+
+            //创建一个临时文件
+            File file = new File(QxxExec.getExternalSDCardPath() + "/tmp.txt");
+            // file.getParentFile().mkdirs();
+
+            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+            FileChannel channel = randomAccessFile.getChannel();
+            MappedByteBuffer map = channel.map(FileChannel.MapMode.READ_WRITE, 0, iArrayColorLengh *4);
+
+            //将位图信息写进buffer
+            bmpFile.copyPixelsToBuffer(map);
+
+            //释放原位图占用的空间
+            bmpFile.recycle();
+            //创建一个新的位图
+            newBmpFile = Bitmap.createBitmap(iBitmapWidth, iBitmapHeight, Bitmap.Config.ARGB_8888);
+            map.position(0);
+            //从临时缓冲中拷贝位图信息
+            newBmpFile.copyPixelsFromBuffer(map);
+            channel.close();
+            randomAccessFile.close();
+            file.delete();
+            // -----------------=============================
+            int iArrayColor[]  = new int[iArrayColorLengh];
+            int count = 0;
+            for (int y = 0; y < iBitmapHeight; y++) {
+                for (int x = 0; x < iBitmapWidth; x++) {
+                    //获得Bitmap 图片中每一个点的color颜色值
+                    int color = newBmpFile.getPixel(x, y);
+                    //将颜色值存在一个数组中 方便后面修改
+                    iArrayColor[count] = color;
+                    //如果你想做的更细致的话 可以把颜色值的R G B 拿到做响应的处理 笔者在这里就不做更多解释
+                    int r = Color.red(color);
+                    int g = Color.green(color);
+                    int b = Color.blue(color);
+
+                    count++;
+
+                    //去掉边框
+                    if (x == 0 || y == 0 || x == iBitmapWidth - 1 || y == iBitmapHeight - 1)
+                    {
+                        newBmpFile.setPixel(x, y, Color.WHITE);
+                    }else {
+                        //如果点的颜色是背景干扰色，则变为白色
+                        if (color == Color.rgb(204, 204, 51) ||
+                                color == Color.rgb(153, 204, 51) ||
+                                color == Color.rgb(204, 255, 102) ||
+                                color == Color.rgb(204, 204, 204) ||
+                                color == Color.rgb(204, 255, 51))
+                        {
+                            newBmpFile.setPixel(x, y, Color.WHITE);
+                        }
+                    }
+                }
+            }
+        }
+        catch(Exception ex){
+            Log.e("ImgPretreatment",ex.getMessage());
+            ex.printStackTrace();
+            newBmpFile=null;
+        }
+        return newBmpFile;
+        // long startTime = System.currentTimeMillis();
+    }
+
 }
