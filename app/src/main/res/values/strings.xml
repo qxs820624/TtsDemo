@@ -55,7 +55,7 @@
     <string name="ocr_init_fail_prompt">baseApi init Failed!</string>
     <string name="button_select_picture">...</string>
     <string name="set_image_processing">set enabled process image</string>
-    <string name="threshold">enable threshold</string>
+    <string name="checkbox_threshold">enable threshold</string>
     <string name="text_selected_picture">Selected picture:</string>
     <string name="text_processed_picture">Processed picture:</string>
 </resources>

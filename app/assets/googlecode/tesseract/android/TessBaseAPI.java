@@ -44,7 +44,6 @@ public class TessBaseAPI
 	{
 		System.loadLibrary("lept");
 		System.loadLibrary("tess");
-		
 		nativeClassInit();
 	}
 	

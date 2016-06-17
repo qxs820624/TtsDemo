@@ -927,9 +927,9 @@ public class Camera2BasicFragment extends Fragment
             case R.id.picture: {
                 takePicture();
                 Intent intent = new Intent(getActivity(), OcrActivity.class);
-                Bundle bundle=new Bundle();
-                bundle.putString("picture_path",mFile.getPath());
-                intent.putExtras(bundle);
+                // Bundle bundle=new Bundle();
+                // bundle.putString("picture_path",mFile.getPath());
+                // intent.putExtras(bundle);
                 startActivity(intent);
                 break;
             }

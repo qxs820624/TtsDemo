@@ -1,123 +1,108 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:background="@drawable/background_main"
-    tools:context=".OcrActivity"
-    android:weightSum="1">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.3"
-        android:orientation="vertical">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.5"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:orientation="horizontal">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".OcrActivity" >
 
-            <Button
-                android:id="@+id/btn_select_picture"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.2"
-                android:text="@string/button_select_picture"/>
-            <EditText
-                android:id="@+id/et_select_picture"
-                android:layout_width="0dp"
-                android:layout_height="30dp"
-                android:layout_weight="0.6"
-                android:textColor="#aaa"
-                android:hint="@string/ocr_et_select_picture"/>
-            <Button
-                android:id="@+id/btn_recognition"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.2"
-                android:text="@string/ocr_btn_recognition"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.5"
-            android:orientation="horizontal">
-            <CheckBox
-                android:id="@+id/ch_threshold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/threshold"
-                android:checked="true"
-                android:layout_marginStart="2dp"/>
-            <RadioGroup
-                android:id="@+id/radiogroup"
-                android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:orientation="horizontal"
-                android:layout_marginStart="20dp">
-                <RadioButton
-                    android:id="@+id/rb_en"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:text="@string/radio_english" />
-
-                <RadioButton
-                    android:id="@+id/rb_ch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:checked="true"
-                    android:text="@string/radio_chinese" />
-            </RadioGroup>
-        </LinearLayout>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
+    <RelativeLayout
+        android:id="@+id/bottombar"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layoutDirection="locale"
-        android:layout_weight="0.7">
-        <EditText
-            android:id="@+id/et_recognition_result"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.4"
-            android:inputType="textMultiLine"
-            android:textSize="12sp"
-            android:textColor="#00F"/>
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.05"
-            android:text="@string/text_selected_picture" />
-        <ImageView
-            android:id="@+id/imgShow"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="0.25"
-            android:src="@drawable/ic_camera_blanket"
-            android:scaleType="fitCenter"
-            android:contentDescription="@string/button_select_picture"
-            android:clickable="true"
-            android:maxHeight="300dp"/>
-        <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.05"
-            android:text="@string/text_processed_picture" />
+        android:layout_alignParentBottom="true" >
 
-        <ImageView
-            android:id="@+id/iv_treated"
+        <RadioGroup
+            android:id="@+id/radiogroup"
             android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_alignParentLeft="true"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@+id/rb_en"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:checked="true"
+                android:text="@string/radio_english" />
+
+            <RadioButton
+                android:id="@+id/rb_ch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/radio_chinese" />
+        </RadioGroup>
+        <Button
+            android:id="@+id/btn_camera"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="2dp"
+            android:text="@string/app_camera2_name" />
+
+        <Button
+            android:id="@+id/btn_select"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_margin="2dp"
+            android:layout_toStartOf="@id/btn_camera"
+            android:text="@string/button_select_picture" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottombar"
+        android:layout_alignParentTop="true" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:src="@drawable/ic_camera_blanket"
-            android:scaleType="fitCenter"
-            android:maxHeight="300dp" />
-    </LinearLayout>
+            android:orientation="vertical" >
 
-</LinearLayout>
+            <CheckBox
+                android:id="@+id/ch_pretreat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/checkbox_threshold"
+                android:checked="true" />
+
+            <TextView
+                android:id="@+id/tv_result"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/ocr_tv_recognition_result" />
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/text_selected_picture" />
+
+            <ImageView
+                android:id="@+id/iv_selected"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:maxHeight="300dp"
+                android:background="@drawable/ic_camera_blanket"/>
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/text_processed_picture" />
+
+            <ImageView
+                android:id="@+id/iv_treated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:background="@drawable/ic_camera_blanket"
+                android:maxHeight="300dp" />
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

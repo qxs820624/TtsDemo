@@ -48,5 +48,5 @@
     <string name="ocr_init_fail_prompt">初始化失败</string>
     <string name="text_processed_picture">预处理后的图片：</string>
     <string name="text_selected_picture">选取的图片：</string>
-    <string name="threshold">二值化处理</string>
+    <string name="checkbox_threshold">二值化处理</string>
 </resources>

@@ -200,10 +200,12 @@ public class TtsVoiceOcrActivity extends Activity implements DirectoryChooserFra
                 startVoiceRecognitionActivity();
             }
         });
-        PackageManager pm = getPackageManager();
-        List activities = pm.queryIntentActivities(new Intent(
-                RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0); // 本地识别程序
 
+        // 检查语言文字转换数据是否存在
+        checkTtsData();
+        // 检查语音识别程序是否存在
+        PackageManager pm = getPackageManager();
+        List activities = pm.queryIntentActivities(new Intent( RecognizerIntent.ACTION_RECOGNIZE_SPEECH), 0); // 本地识别程序
         /*
          * 此处没有使用捕捉异常，而是检测是否有语音识别程序。
          * 也可以在startRecognizerActivity()方法中捕捉ActivityNotFoundException异常
@@ -346,9 +348,9 @@ public class TtsVoiceOcrActivity extends Activity implements DirectoryChooserFra
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * 校验TTS引擎安装及资源状态
-     */
+    //  校验TTS引擎安装及资源状态
+    //  检查TTS数据是否已经安装并且可用
+
     private boolean checkTtsData() {
         try {
             Intent checkIntent = new Intent();
@@ -514,11 +516,11 @@ public class TtsVoiceOcrActivity extends Activity implements DirectoryChooserFra
     private void startOcrActivity() {
         // Log.e("REQ_OCR", pictureSavePath);
         Intent intent = new Intent(this, OcrActivity.class);
-        Bundle bundle=new Bundle();
-        bundle.putString("picture_path",pictureSavePath);
-        bundle.putString("ocr_language",sSelectedLanguage);
-        bundle.putString(ttsSetting.PROPERTY_IMAGE_PROCESSING, String.valueOf(ttsSetting.getImageProcessing()));
-        intent.putExtras(bundle);
+        // Bundle bundle=new Bundle();
+        // bundle.putString("picture_path",pictureSavePath);
+        // bundle.putString("ocr_language",sSelectedLanguage);
+        // bundle.putString(ttsSetting.PROPERTY_IMAGE_PROCESSING, String.valueOf(ttsSetting.getImageProcessing()));
+        // intent.putExtras(bundle);
         startActivity(intent);
     }
     /**

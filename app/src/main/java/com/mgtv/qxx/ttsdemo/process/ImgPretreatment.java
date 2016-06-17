@@ -1,12 +1,14 @@
 package com.mgtv.qxx.ttsdemo.process;
 
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.Color;
 import android.util.Log;
 
 /**
  * Created by Administrator on 2016/6/15.
  */
+
 public class ImgPretreatment {
 
     private static Bitmap img;
@@ -93,7 +95,7 @@ public class ImgPretreatment {
             }
         }
         Bitmap result = Bitmap
-                .createBitmap(imgWidth, imgHeight, Bitmap.Config.RGB_565);
+                .createBitmap(imgWidth, imgHeight, Config.RGB_565);
         result.setPixels(imgPixels, 0, imgWidth, 0, 0, imgWidth, imgHeight);
         return result;
     }
@@ -231,7 +233,7 @@ public class ImgPretreatment {
         }
 
         Bitmap result = Bitmap
-                .createBitmap(imgWidth, imgHeight, Bitmap.Config.RGB_565);
+                .createBitmap(imgWidth, imgHeight, Config.RGB_565);
         result.setPixels(imgPixels, 0, imgWidth, 0, 0, imgWidth, imgHeight);
 
         return result;
@@ -277,7 +279,7 @@ public class ImgPretreatment {
         }
 
         Bitmap result = Bitmap
-                .createBitmap(imgWidth, imgHeight, Bitmap.Config.RGB_565);
+                .createBitmap(imgWidth, imgHeight, Config.RGB_565);
         result.setPixels(imgPixels, 0, imgWidth, 0, 0, imgWidth, imgHeight);
 
         return result;

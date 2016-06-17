@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.TextToSpeech.OnInitListener;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.Button;
@@ -24,14 +25,18 @@ import java.util.Locale;
 /**
  * Created by Administrator on 2016/5/20.
  */
-public class GoogleSpeech implements TextToSpeech.OnInitListener{
+public class GoogleSpeech implements OnInitListener{
 
     private static final String LOG_TAG = "GoogleSpeech";
+
+    private static final String TextToSpeechApk = "com.iflytek.speechcloud";
+
     private AudioManager audioManager; // 音频管理对象
 
     // 设置对象
     private static Settings ttsSetting;
 
+//    private TextToSpeech mTts;
     private TextToSpeech mTts;
 
     private String recognizeText;
@@ -76,23 +81,32 @@ public class GoogleSpeech implements TextToSpeech.OnInitListener{
 
     @Override
     public void onInit(int status) {
-        if (status == TextToSpeech.SUCCESS) {
-            // Log.e("TTS", "Initialization Success!");
-            displayToast("初始化成功！");
-            isInited = true;
-            btnSpeak.setEnabled(true);
-            mTts.setLanguage(Locale.CHINESE);
-            //        Changing Pitch Rate
-            //        You can set speed pitch level by using setPitch() function. By default the value is 1.0 You can set lower values than 1.0 to decrease pitch level or greater values for increase pitch level.
-            mTts.setPitch(speechPitch);
 
-            //        Changing Speed Rate
-            //        The speed rate can be set using setSpeechRate(). This also will take default of 1.0 value. You can double the speed rate by setting 2.0 or make half the speed level by setting 0.5
-            mTts.setSpeechRate(speechRate);
+        //判断TTS初始化的返回版本号，如果为-1，表示没有安装对应的TTS数据
+        if(0 == -1)
+        {
+            //提示安装所需的TTS数据
+            alertInstallEyesFreeTTSData();
         } else {
-            Log.e("TTS", "Initilization Failed!");
-            displayToast("初始化错误！");
-            isInited = false;
+            if (status == TextToSpeech.SUCCESS) {
+                // Log.e("TTS", "Initialization Success!");
+                displayToast("初始化成功！");
+                isInited = true;
+                btnSpeak.setEnabled(true);
+
+                mTts.setLanguage(Locale.CHINESE);
+                //        Changing Pitch Rate
+                //        You can set speed pitch level by using setPitch() function. By default the value is 1.0 You can set lower values than 1.0 to decrease pitch level or greater values for increase pitch level.
+                mTts.setPitch(speechPitch);
+
+                //        Changing Speed Rate
+                //        The speed rate can be set using setSpeechRate(). This also will take default of 1.0 value. You can double the speed rate by setting 2.0 or make half the speed level by setting 0.5
+                mTts.setSpeechRate(speechRate);
+            } else {
+                Log.e("TTS", "Initilization Failed!");
+                displayToast("初始化错误！");
+                isInited = false;
+            }
         }
     }
 
@@ -253,12 +267,9 @@ public class GoogleSpeech implements TextToSpeech.OnInitListener{
     }
 
     public void initTts(){
-        //if (mTts != null){
-        //    mTts.stop();
-        //    mTts.shutdown();
-        //}
         if (mTts == null){
-            mTts = new TextToSpeech(context,this);
+            // QxxExec.execCommand("am start -n " + TextToSpeechApk, false);
+            mTts = new TextToSpeech(this.context,this);
         }
     }
 
@@ -325,4 +336,31 @@ public class GoogleSpeech implements TextToSpeech.OnInitListener{
         Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
     }
 
+    /*
+    // 如何实现语音控制呢？比如当我们说天气的时候，界面会自动呈现的天气预报的界面，当我们说UC的时候，会自动跳转到UC浏览器上等等。其实方法很简单，仅仅需要对识别到的字符串进行判断，当它符合特定的字符串是就对Activity进行跳转，跳转到自己写好的Activity上，或者跳转到已安装的应用上，下面来看具体怎么实现：
+    //注意 凡是Intent能办到的（发邮件，跳到已安装应用，拨号，发短信，发彩信，浏览网页，播放多媒体。。。。），它就都能办到。在layout布局里增加一个ToggleButton用于开关语音控制：
+    private void doVoice(ArrayList<RecognizerResult> results) {
+        Intent i = new Intent();
+        for(RecognizerResult result : results){
+            if(result.text.contains("天气")){
+                //天气界面的跳转
+                i.setClass(Voice1Activity.this, Weather.class);
+                startActivity(i);
+            }else if(result.text.contains("新闻")){
+                //新闻界面的跳转
+                i.setClass(Voice1Activity.this, News.class);
+                startActivity(i);
+            }else if(result.text.contains("短信")){
+                //短信界面的跳转
+                i.setAction(Intent.ACTION_VIEW);
+                i.setType("vnd.android-dir/mms-sms");
+                startActivity(i);
+            }else{
+                //如果没有相应指令就用Toast提示用户
+                Toast.makeText(Voice1Activity.this, "无法识别", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+    }
+    */
 }
