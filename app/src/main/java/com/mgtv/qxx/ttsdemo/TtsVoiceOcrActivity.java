@@ -520,7 +520,9 @@ public class TtsVoiceOcrActivity extends Activity implements DirectoryChooserFra
         // bundle.putString("ocr_language",sSelectedLanguage);
         // bundle.putString(ttsSetting.PROPERTY_IMAGE_PROCESSING, String.valueOf(ttsSetting.getImageProcessing()));
         // intent.putExtras(bundle);
-        intent.putExtras(data);
+        if (data != null) {
+            intent.putExtras(data);
+        }
         startActivity(intent);
     }
     /**

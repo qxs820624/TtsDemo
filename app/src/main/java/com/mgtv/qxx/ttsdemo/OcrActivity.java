@@ -140,18 +140,20 @@ public class OcrActivity extends Activity {
         });
 
         //新页面接收数据
-        Bundle bundle = this.getIntent().getExtras();
         Intent intentPicture = this.getIntent();
-        String picture_path = bundle.getString("picture_path");
-        if (picture_path == null || picture_path.isEmpty()){
-            if (intentPicture == null){
-                return;
+        String picture_path = "";
+        if (intentPicture != null && intentPicture.getExtras() != null){
+            Bundle bundle = this.getIntent().getExtras();
+            if (bundle != null) {
+                picture_path = bundle.getString("picture_path");
             }
-            bitmapSelected = decodeUriAsBitmap(intentPicture.getData());
-        }else {
-            bitmapSelected = decodeUriAsBitmap(Uri.parse(picture_path));
+            if (picture_path == null || picture_path.isEmpty()){
+                bitmapSelected = decodeUriAsBitmap(intentPicture.getData());
+            }else {
+                bitmapSelected = decodeUriAsBitmap(Uri.parse(picture_path));
+            }
+            new Thread(runnable).start();
         }
-        new Thread(runnable).start();
     }
 
     @Override
