@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by Administrator on 2016/6/15.
@@ -28,6 +30,11 @@ import java.nio.channels.FileChannel;
 
 public class ImgPretreatment {
     private static final String LOG_TAG = "ImgPretreatment";
+    private static final int NOISE1 = Color.rgb(204, 204, 51);
+    private static final int NOISE2 = Color.rgb(153, 204, 51);
+    private static final int NOISE3 = Color.rgb(204, 255, 102);
+    private static final int NOISE4 = Color.rgb(204, 204, 204);
+    private static final int NOISE5 = Color.rgb(204, 255, 51);
     private static Bitmap img;
     private static String imgPath;
     private static int imgWidth;
@@ -53,8 +60,8 @@ public class ImgPretreatment {
             return null;
         Log.e("converyToGrayImg",img.toString());
         setImgInfo(img);
-
-        return getGrayImg();
+        int []p  = new int[2];
+        return getGrayImg(p);
     }
 
     public static void setImgPath(String path){
@@ -97,24 +104,36 @@ public class ImgPretreatment {
      * @return
      */
     public static Bitmap doPretreatment(Bitmap img) {
-
-        Bitmap rotatedBitmap = RotateProcess(img);
+        long start = System.nanoTime();
+        int rotate = getRotate(img);
+        Bitmap rotatedBitmap = doRotate(img,rotate);
         if (rotatedBitmap == null) {
             Log.e(LOG_TAG, "RotateProcess FAILED! rotatedBitmap = null");
-            return null;
+            rotatedBitmap = img;
         }
-        setImgInfo(PreProcess(rotatedBitmap));
-
-        Bitmap grayImg = getGrayImg();
-
+        long endRotate = System.nanoTime();
+        Log.i("doPretreatment",String.format("RotateProcess spend %d nano seconds",endRotate - start));
+        setImgInfo(rotatedBitmap);
+        long endPreProcess = System.nanoTime();
+        Log.i("doPretreatment",String.format("setImgInfo spend %d nano seconds",endPreProcess - endRotate));
         int[] p = new int[2];
         int maxGrayValue = 0, minGrayValue = 255;
+        Bitmap grayImg = getGrayImg(p);
+        long endGrayImg = System.nanoTime();
+        Log.i("doPretreatment",String.format("getGrayImg spend %d nano seconds",endGrayImg - endPreProcess));
+
         // 计算最大及最小灰度值
-        getMinMaxGrayValue(p);
+        // 已经放在灰度中计算了， 浪费资源
+        // getMinMaxGrayValue(p);
+        // long endMinMaxGrayValue = System.nanoTime();
+        // Log.i("doPretreatment",String.format("getMinMaxGrayValue spend %d nano seconds",endMinMaxGrayValue - endGrayImg));
         minGrayValue = p[0];
         maxGrayValue = p[1];
+        Log.i("doPretreatment",String.format("minGrayValue = %d maxGrayValue=%d",minGrayValue,maxGrayValue));
         // 计算迭代法阈值
         int T1 = getIterationHresholdValue(minGrayValue, maxGrayValue);
+        long endIterationHresholdValue = System.nanoTime();
+        Log.i("doPretreatment",String.format("getIterationHresholdValue spend %d nano seconds",endIterationHresholdValue - endGrayImg));
         // // 计算大津法阈值
         // int T2 = getOtsuHresholdValue(minGrayValue, maxGrayValue);
         // // 计算最大熵法阈值
@@ -123,6 +142,8 @@ public class ImgPretreatment {
         //
         // Bitmap result = selectBinarization(T);
         Bitmap result = binarization(T1);
+        long endBinarization = System.nanoTime();
+        Log.i("doPretreatment",String.format("binarization spend %d nano seconds",endBinarization - endIterationHresholdValue));
 
         return result;
     }
@@ -134,25 +155,61 @@ public class ImgPretreatment {
      *            原图片
      * @return 灰度图
      */
-    private static Bitmap getGrayImg() {
-
+    private static Bitmap getGrayImg(int[] p) {
         int alpha = 0xFF << 24;
+        int grey = 0;
+
+        int minGrayValue = 255;
+        int maxGrayValue = 0;
+
+        Collection TEMPLATE_COLL = new ArrayList();
+        TEMPLATE_COLL.add(NOISE1);
+        TEMPLATE_COLL.add(NOISE2);
+        TEMPLATE_COLL.add(NOISE3);
+        TEMPLATE_COLL.add(NOISE4);
+        TEMPLATE_COLL.add(NOISE5);
         for (int i = 0; i < imgHeight; i++) {
             for (int j = 0; j < imgWidth; j++) {
-                int grey = imgPixels[imgWidth * i + j];
+                int index = imgWidth * i + j;
+                //去掉边框
+                if (i == 0 || j == 0 || j == imgWidth - 1 || i == imgHeight - 1)
+                {
+                    grey = Color.WHITE;
+                } else {
+                    grey = imgPixels[index];
+                    //如果点的颜色是背景干扰色，则变为白色
+                    if (grey == NOISE1 ||
+                            grey == NOISE2 ||
+                            grey == NOISE3 ||
+                            grey == NOISE4 ||
+                            grey == NOISE5)
+//                    if (TEMPLATE_COLL.contains(grey))
+                    {
+                        grey = Color.WHITE;
+                    } else {
+                        int red = ((grey & 0x00FF0000) >> 16);
+                        int green = ((grey & 0x0000FF00) >> 8);
+                        int blue = (grey & 0x000000FF);
 
-                int red = ((grey & 0x00FF0000) >> 16);
-                int green = ((grey & 0x0000FF00) >> 8);
-                int blue = (grey & 0x000000FF);
-
-                grey = (int) ((float) red * 0.3 + (float) green * 0.59 + (float) blue * 0.11);
-                grey = alpha | (grey << 16) | (grey << 8) | grey;
-                imgPixels[imgWidth * i + j] = grey;
+                        grey = (int) ((float) red * 0.3 + (float) green * 0.59 + (float) blue * 0.11);
+                        grey = alpha | (grey << 16) | (grey << 8) | grey;
+                    }
+                }
+                imgPixels[index] = grey;
+                if (grey < minGrayValue)
+                    minGrayValue = grey;
+                if (grey > maxGrayValue)
+                    maxGrayValue = grey;
             }
         }
         Bitmap result = Bitmap
                 .createBitmap(imgWidth, imgHeight, Config.RGB_565);
         result.setPixels(imgPixels, 0, imgWidth, 0, 0, imgWidth, imgHeight);
+
+        // 获取最大值最小值
+        p[0] = minGrayValue;
+        p[1] = maxGrayValue;
+
         return result;
     }
 
@@ -384,11 +441,11 @@ public class ImgPretreatment {
         return pix[i];
     }
 
-    public static Bitmap RotateProcess(Bitmap img){
+    public static int getRotate(Bitmap img){
         String path = getImagePath();
         if (path == null || path.isEmpty()){
             Log.e(LOG_TAG, "RotateProcess FAILED! getImagePath is  Empty");
-            return null;
+            return 0;
         }
         // 图片旋转角度
         int rotate = 0;
@@ -399,7 +456,6 @@ public class ImgPretreatment {
                 exif =  new ExifInterface(path);
             }
 
-
             // 先获取当前图像的方向，判断是否需要旋转
             if (exif != null) {
                 imageOrientation = exif
@@ -408,7 +464,7 @@ public class ImgPretreatment {
             }
         }catch (Exception e){
             e.printStackTrace();
-            return null;
+            return 0;
         }
         Log.i("ImgPretreatment", "Current image orientation is " + imageOrientation);
 
@@ -427,99 +483,36 @@ public class ImgPretreatment {
                 break;
         }
         Log.i(LOG_TAG, "Current image need rotate: " + rotate);
-        if (rotate != 0){
-            // 获取当前图片的宽和高
-            int w = img.getWidth();
-            int h = img.getHeight();
 
+        return rotate;
+    }
+
+    public static Bitmap doRotate(Bitmap img, int rotate){
+        if (rotate != 0){
             // 使用Matrix对图片进行处理
             Matrix mtx = new Matrix();
             mtx.preRotate(rotate);
-
             // 旋转图片
-            img = Bitmap.createBitmap(img, 0, 0, w, h, mtx, false);
+            img = Bitmap.createBitmap(img, 0, 0, imgWidth, imgHeight, mtx, false);
             img = img.copy(Bitmap.Config.ARGB_8888, true);
         }
-
         return img;
     }
 
-    public static Bitmap PreProcess(Bitmap bmpFile) {
-        // Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        //在这里创建了一张bitmap
-        // mBitmap = BitmapFactory.decodeResource(context.getResources(),R.drawable.ic_vd_mic_on);
-        //将这张bitmap设置为背景图片
-        //setBackgroundDrawable(new BitmapDrawable(mBitmap));
-
-        Bitmap newBmpFile;
-        int iBitmapWidth = bmpFile.getWidth();
-        int iBitmapHeight = bmpFile.getHeight();
-
-        int iArrayColorLengh = iBitmapWidth * iBitmapHeight;
-        try{
-
-            //创建一个临时文件
-            File file = new File(QxxExec.getExternalSDCardPath() + "/tmp.txt");
-            // file.getParentFile().mkdirs();
-
-            RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
-            FileChannel channel = randomAccessFile.getChannel();
-            MappedByteBuffer map = channel.map(FileChannel.MapMode.READ_WRITE, 0, iArrayColorLengh *4);
-
-            //将位图信息写进buffer
-            bmpFile.copyPixelsToBuffer(map);
-
-            //释放原位图占用的空间
-            bmpFile.recycle();
-            //创建一个新的位图
-            newBmpFile = Bitmap.createBitmap(iBitmapWidth, iBitmapHeight, Bitmap.Config.ARGB_8888);
-            map.position(0);
-            //从临时缓冲中拷贝位图信息
-            newBmpFile.copyPixelsFromBuffer(map);
-            channel.close();
-            randomAccessFile.close();
-            file.delete();
-            // -----------------=============================
-            int iArrayColor[]  = new int[iArrayColorLengh];
-            int count = 0;
-            for (int y = 0; y < iBitmapHeight; y++) {
-                for (int x = 0; x < iBitmapWidth; x++) {
-                    //获得Bitmap 图片中每一个点的color颜色值
-                    int color = newBmpFile.getPixel(x, y);
-                    //将颜色值存在一个数组中 方便后面修改
-                    iArrayColor[count] = color;
-                    //如果你想做的更细致的话 可以把颜色值的R G B 拿到做响应的处理 笔者在这里就不做更多解释
-                    int r = Color.red(color);
-                    int g = Color.green(color);
-                    int b = Color.blue(color);
-
-                    count++;
-
-                    //去掉边框
-                    if (x == 0 || y == 0 || x == iBitmapWidth - 1 || y == iBitmapHeight - 1)
-                    {
-                        newBmpFile.setPixel(x, y, Color.WHITE);
-                    }else {
-                        //如果点的颜色是背景干扰色，则变为白色
-                        if (color == Color.rgb(204, 204, 51) ||
-                                color == Color.rgb(153, 204, 51) ||
-                                color == Color.rgb(204, 255, 102) ||
-                                color == Color.rgb(204, 204, 204) ||
-                                color == Color.rgb(204, 255, 51))
-                        {
-                            newBmpFile.setPixel(x, y, Color.WHITE);
-                        }
-                    }
-                }
-            }
-        }
-        catch(Exception ex){
-            Log.e("ImgPretreatment",ex.getMessage());
-            ex.printStackTrace();
-            newBmpFile=null;
-        }
-        return newBmpFile;
-        // long startTime = System.currentTimeMillis();
-    }
+    /**
+     * https://en.wikipedia.org/wiki/Floyd%E2%80%93Steinberg_dithering
+     * Floyd–Steinberg dithering
+     * for each y from top to bottom
+             for each x from left to right
+             oldpixel  := pixel[x][y]
+             newpixel  := find_closest_palette_color(oldpixel)
+             pixel[x][y]  := newpixel
+             quant_error  := oldpixel - newpixel
+             pixel[x+1][y  ] := pixel[x+1][y  ] + quant_error * 7/16
+             pixel[x-1][y+1] := pixel[x-1][y+1] + quant_error * 3/16
+             pixel[x  ][y+1] := pixel[x  ][y+1] + quant_error * 5/16
+             pixel[x+1][y+1] := pixel[x+1][y+1] + quant_error * 1/16
+     find_closest_palette_color(oldpixel) = floor(oldpixel / 256)
+     */
 
 }
